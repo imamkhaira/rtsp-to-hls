@@ -1,13 +1,17 @@
-import Express from 'express';
+import Express, { json } from 'express';
 import { logger } from '@/utils'
+import JSONResponse from '@/middlewares/json-response'
 import { API_PORT } from '@/config';
-import Router from '@/routes';
-
+import Routes from '@/routes';
 
 const TranscoderApp = Express();
-TranscoderApp.use(Router);
+
+TranscoderApp.use(Express.json());
+TranscoderApp.use(Express.urlencoded({ extended: true }));
+TranscoderApp.use(JSONResponse);
+
+TranscoderApp.use(Routes);
 
 TranscoderApp.listen(API_PORT, () => {
-  // tslint:disable-next-line: no-console
   logger(`Example app listening at http://localhost:${API_PORT}`);
 });
