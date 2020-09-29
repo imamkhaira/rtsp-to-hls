@@ -1,6 +1,6 @@
-import { STREAM_MAX_PORT, STREAM_MIN_PORT } from "@/config";
-import { StreamObject } from "./types";
-import RTSPStream from "node-rtsp-stream-es6";
+import { STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/config';
+import { StreamObject } from './types';
+import RTSPStream from 'node-rtsp-stream-es6';
 
 export class Stream {
   private streams: StreamObject[] = [];
@@ -27,5 +27,7 @@ export class Stream {
     return createNewPort();
   }
 
-  private startStream() {}
+  private startStream() {
+    return 1;
+  }
 }
