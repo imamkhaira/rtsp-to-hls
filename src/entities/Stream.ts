@@ -1,30 +1,31 @@
-import { STREAM_MIN_PORT, STREAM_MAX_PORT } from '@/config'
-import { logger } from '@/utils';
+import { STREAM_MAX_PORT, STREAM_MIN_PORT } from "@/config";
+import { StreamObject } from "./types";
+import RTSPStream from "node-rtsp-stream-es6";
 
-export interface StreamObject {
-    port: number;
-    name: string;
-    source: string;
-};
+export class Stream {
+  private streams: StreamObject[] = [];
 
+  private createStream(source: string, name: string) {
+    const portNumber = this.generateRandomPort();
+    this.streams.push({
+      port: portNumber,
+      name,
+      source,
+      lastHeartBeat: Date.now(),
+    });
+    return portNumber;
+  }
 
-export default class StreamDatabase {
-    private streamDb: StreamObject[] = [];
+  private generateRandomPort() {
+    const usedPort = this.streams.map(({ port }) => `${port}`);
+    const createNewPort = (): number => {
+      const newPort = Math.floor(
+        Math.random() * STREAM_MAX_PORT + STREAM_MIN_PORT
+      );
+      return usedPort.includes(`${newPort}`) ? createNewPort() : newPort;
+    };
+    return createNewPort();
+  }
 
-    private get availablePort(): number {
-        const usedPorts = this.streamDb.map(({ port }) => `${port}`);
-
-        // recursively check if the port has been assigned and generate new port number
-        const checkPort = (): number => {
-            const newPort = Math.floor((Math.random() * STREAM_MIN_PORT) + STREAM_MAX_PORT);
-            logger(`testing port ${newPort}`);
-            return usedPorts.includes(`${newPort}`) ? checkPort() : newPort;
-        }
-
-        logger('assigning port');
-        return checkPort();
-    }
-
-    private
-
+  private startStream() {}
 }
