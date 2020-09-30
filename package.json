@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "node build.js && tsc --build tsconfig.prod.json",
-    "lint": "tslint --project \"tsconfig.json\"",
+    "lint": "tslint --fix --project \"tsconfig.json\"",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
     "test": "nodemon --config ./spec/nodemon.json"
@@ -25,21 +25,18 @@
     "@server": "dist/Server"
   },
   "dependencies": {
-    "command-line-args": "^5.1.1",
-    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "helmet": "^4.1.1",
     "http-status-codes": "^2.1.4",
-    "jsonfile": "^6.0.1",
     "module-alias": "^2.2.2",
-    "morgan": "^1.10.0",
     "node-rtsp-stream-es6": "^1.0.7",
     "tslib": "^2.0.1",
-    "winston": "^3.3.3"
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.0",
     "@types/command-line-args": "^5.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.8",

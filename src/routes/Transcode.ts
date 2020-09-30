@@ -1,39 +1,65 @@
 import { Router } from 'express';
-import RouteDocs from '@/types/routedocs'
+import { StatusCodes } from 'http-status-codes';
+import RouteDocs from '@/types/routedocs';
+import StreamDB from '@/entities/DB';
+import Stream, { StreamRequest, StreamResponse } from '@/entities/Stream';
 
 const route = Router();
 
+const db = new StreamDB();
+
 /** start the MPEG live stream */
 route.post('/start', (req, res) => {
-    res.status(201).end(JSON.stringify({
-        port: Math.floor((Math.random() * 1000) + 4000),
-        originalRequest: req.body
+    const request = req.body as StreamRequest[];
+
+    if (!request.length) {
+        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
+    }
+
+    const response: StreamResponse[] = db.startStreams(request).map(streams => ({
+        id: streams.id,
+        name: streams.name,
+        url: streams.url,
+        port: streams.port,
+        ends: streams.ends,
     }));
+    return res.status(StatusCodes.CREATED).end(JSON.stringify(response));
 });
 
 /** stop the MPEG live stream and kill its websocket */
-route.post('/stop/:streamPort', (req, res) => {
-    const streamPort = req.params[`streamPort`];
-    res.end(`wkwkwkkwkw deleted ${streamPort}`);
+route.post('/stop', (req, res) => {
+    const request = req.body as StreamRequest[];
+
+    if (!request.length)
+        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
+
+    const response = request.map(port => ({
+        port,
+        ends: Date.now() - 1000,
+    }));
+    return res.status(StatusCodes.OK).end(JSON.stringify(response));
 });
 
 /** send ping to keep the stream alive */
 route.post('/heartbeat', (req, res) => {
-    const streamPort = req.body as number[];
-    const newEnd = Date.now() + 5 * 60000;
-    const response = streamPort.map(port => ({
+    const [ request, newEnd ] = [ req.body as number[], Date.now() + 5 * 60000 ];
+
+    if (!request.length)
+        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`please see docs for example`);
+
+    const response = request.map(port => ({
         port,
-        ending: newEnd
+        ends: newEnd,
     }));
-    res.status(202).end(JSON.stringify(response));
+    return res.status(StatusCodes.OK).end(JSON.stringify(response));
+
 });
 
 route.all('/doc', (req, res) => {
-    res.end(JSON.stringify([
+    return res.end(JSON.stringify([
         {
             url: req.baseUrl + '/start',
             method: 'POST',
-            param: [],
             body: {
                 url: 'string',
                 name: 'string'
@@ -42,22 +68,18 @@ route.all('/doc', (req, res) => {
         {
             url: req.baseUrl + '/stop/:streamPort',
             method: 'POST',
-            param: [
-                {
-                    name: 'streamPort',
-                    description: 'the websocket port that will be ended'
-                }
+            body: [
+                'port Numbers'
             ]
         },
         {
             url: req.baseUrl + '/heartbeat',
             method: 'POST',
-            param: null,
             body: [
-                'portNumbers'
+                'port Numbers'
             ]
         }
     ] as RouteDocs[]));
-})
+});
 
 export default route;
