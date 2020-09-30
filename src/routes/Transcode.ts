@@ -16,27 +16,24 @@ route.post('/start', (req, res) => {
         return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
     }
 
-    const response: StreamResponse[] = db.startStreams(request).map(streams => ({
-        id: streams.id,
-        name: streams.name,
-        url: streams.url,
-        port: streams.port,
-        ends: streams.ends,
-    }));
+    const response: StreamResponse[] = db.startStreams(request)
+        .map(({ id, name, url, port, ends }) => ({
+            id, name, url, port, ends
+        }));
     return res.status(StatusCodes.CREATED).end(JSON.stringify(response));
 });
 
 /** stop the MPEG live stream and kill its websocket */
 route.post('/stop', (req, res) => {
-    const request = req.body as StreamRequest[];
+    const request = req.body as number[];
 
     if (!request.length)
         return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
 
-    const response = request.map(port => ({
-        port,
-        ends: Date.now() - 1000,
-    }));
+    const response: StreamResponse[] = db.stopStreams(request)
+        .map(({ id, name, url, port, ends }) => ({
+            id, name, url, port, ends
+        }));
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
 });
 
