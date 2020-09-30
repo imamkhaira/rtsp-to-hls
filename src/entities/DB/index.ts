@@ -3,7 +3,9 @@ import { STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/config';
 import { logger } from '@/utils';
 
 export default class StreamDB {
-    constructor (private db: Stream[] = []) {
+    private db: Stream[] = [];
+
+    constructor () {
         setInterval(this.collectGarbageStreams, 10000);
     }
 

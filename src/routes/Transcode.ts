@@ -44,10 +44,10 @@ route.post('/heartbeat', (req, res) => {
     if (!request.length)
         return res.status(StatusCodes.NOT_ACCEPTABLE).end(`please see docs for example`);
 
-    const response = request.map(port => ({
-        port,
-        ends: newEnd,
-    }));
+    const response: StreamResponse[] = db.updateHeartbeats(request)
+        .map(({ id, name, url, port, ends }) => ({
+            id, name, url, port, ends
+        }));
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
 
 });

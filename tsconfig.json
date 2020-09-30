@@ -15,13 +15,16 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "node-rtsp-stream-es6": [
+        "src/@types/node-rtsp-stream-es6"
       ]
     },
     "types": [
-      "node"
+      "node",
     ],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
     ]
   },
   "include": [
