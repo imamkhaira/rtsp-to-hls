@@ -21,16 +21,16 @@ export default class Stream implements StreamObject {
         this.port = port;
         this.stream = new RTSPStream({ name, url, port });
         this.ends = Date.now() + STREAM_KEEPALIVE_DURATION;
+        this.stream.start();
         logger(`Stream.ts: starting ${this.name} (${this.id}) on port ${this.port}`);
-        // this.stream.start();
     }
 
     /** stop the stream object, set its end date to now() and reset the port to -1 */
     public stop() {
-        this.ends = Date.now() - 1000;
-        // this.stream.stop();
-        this.port = -1;
         logger(`Stream.ts: stopping ${this.name} (${this.id}) on port ${this.port}`);
+        if (this.port > 0) this.stream.stop(() => true);
+        this.ends = Date.now();
+        this.port = -1;
     }
 
     /** extends the stream duration into STREAM_KEEPALIVE_DURATION miliseconds from now() */

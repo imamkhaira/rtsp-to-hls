@@ -4,6 +4,6 @@ declare module "node-rtsp-stream-es6" {
 
     start(): void;
 
-    stop(): void;
+    stop(cb: any): void;
   }
 }

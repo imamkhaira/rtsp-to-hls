@@ -48,12 +48,12 @@ export default class StreamDB {
      * note that this function runs recursively. returns the port number
      */
     public get unusedPort(): number {
-        const usedPorts = this.db.map(({ port }) => port);
+        const usedPorts = this.db.map(({ port }) => `${port}`);
         const unusedPort = (): number => {
             const newPort = Math.floor(
                 Math.random() * (STREAM_MAX_PORT - STREAM_MIN_PORT + 1)
             ) + STREAM_MIN_PORT;
-            return !usedPorts.includes(newPort) ? newPort : unusedPort();
+            return usedPorts.includes(`${newPort}`) ? unusedPort() : newPort;
         };
         return unusedPort();
     }
