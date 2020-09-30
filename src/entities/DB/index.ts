@@ -64,18 +64,15 @@ export default class StreamDB {
     private collectGarbageStreams(duration = 10000) {
         return setInterval(() => {
             if (this.db.length > 1) {
-                const inactiveStreams = this.db.filter(({ ends }) => ends <= Date.now());
-                if (inactiveStreams.length > 0) {
-                    inactiveStreams.forEach(streams => streams.stop());
-                    this.db = this.db.filter(({ ends }) => ends >= Date.now());
-                    logger('Db.ts: removing these streams:', inactiveStreams);
+                const garbages = this.db.filter(({ ends }) => (ends <= Date.now()));
+                if (garbages.length > 0) {
+                    garbages.forEach((garbage, index) => {
+                        garbage.stop();
+                        this.db.splice(index);
+                        logger(`DB.ts: removing garbage stream:`, garbage);
+                    });
                 }
-            } else {
-                logger('DB.ts: no stream is running right nao');
             }
         }, duration);
     }
-
-
-
 }
