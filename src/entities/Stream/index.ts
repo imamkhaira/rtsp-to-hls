@@ -15,7 +15,6 @@ export default class Stream implements StreamObject {
 
     /** Create a new Stream object from its name, url and port and start it immediately */
     constructor (name: string, url: string, port: number) {
-        logger(`Stream.ts: creating ${this.name} (${this.id}) on port ${this.port}`);
         this.id = uuidv4();
         this.name = name;
         this.url = url;

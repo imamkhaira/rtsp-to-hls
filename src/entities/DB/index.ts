@@ -52,7 +52,7 @@ export default class StreamDB {
     public get unusedPort(): number {
         const usedPorts = this.db.map(({ port }) => port);
         const unusedPort = (): number => {
-            const newPort = Math.floor((Math.random() * STREAM_MAX_PORT) + STREAM_MIN_PORT);
+            const newPort = Math.floor((Math.random() % STREAM_MAX_PORT) + STREAM_MIN_PORT);
             return !usedPorts.includes(newPort) ? newPort : unusedPort();
         };
         return unusedPort();
@@ -62,8 +62,8 @@ export default class StreamDB {
      * prune stopped streams from database. to be run periodically by the constructor
      */
     private collectGarbageStreams(): void {
-        if (this.db.length < 1) {
-            const temp = this.db.filter(streams => streams.ends <= Date.now());
+        if (this.db.length > 1) {
+            const temp = this.db.filter(streams => streams.ends >= Date.now());
             this.db = [ ...temp ];
             logger('DB.ts: Collecting and removing closed streams. active:', temp);
         } else {
