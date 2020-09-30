@@ -3,8 +3,9 @@ import { STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/config';
 import { logger } from '@/utils';
 
 export default class StreamDB {
-    constructor (private db: Stream[] = []) {
-        setInterval(() => this.collectGarbageStreams(), 10000);
+    private db: Stream[] = [];
+    constructor () {
+        this.collectGarbageStreams();
     }
 
     /**
@@ -12,12 +13,9 @@ export default class StreamDB {
      * the created streams will be started immediately
      */
     public startStreams(request: StreamRequest[]): Stream[] {
-        logger(`DB.ts: create stream request with parameter:`, request);
-        const newStreams = request.map(({ name, url }) => {
-            return new Stream(name, url, this.unusedPort);
-        });
-
-        this.db.concat(newStreams);
+        const newStreams = request.map(({ name, url }) => new Stream(name, url, this.unusedPort));
+        this.db = this.db.concat(newStreams);
+        logger(`DB.ts: created stream request: `, this.db);
         return newStreams;
     }
 
@@ -52,7 +50,9 @@ export default class StreamDB {
     public get unusedPort(): number {
         const usedPorts = this.db.map(({ port }) => port);
         const unusedPort = (): number => {
-            const newPort = Math.floor((Math.random() % STREAM_MAX_PORT) + STREAM_MIN_PORT);
+            const newPort = Math.floor(
+                Math.random() * (STREAM_MAX_PORT - STREAM_MIN_PORT + 1)
+            ) + STREAM_MIN_PORT;
             return !usedPorts.includes(newPort) ? newPort : unusedPort();
         };
         return unusedPort();
@@ -61,14 +61,21 @@ export default class StreamDB {
     /**
      * prune stopped streams from database. to be run periodically by the constructor
      */
-    private collectGarbageStreams(): void {
-        if (this.db.length > 1) {
-            const temp = this.db.filter(streams => streams.ends >= Date.now());
-            this.db = [ ...temp ];
-            logger('DB.ts: Collecting and removing closed streams. active:', temp);
-        } else {
-            logger('DB.ts: no stream is running right nao');
-        }
+    private collectGarbageStreams(duration = 10000) {
+        return setInterval(() => {
+            if (this.db.length > 1) {
+                const inactiveStreams = this.db.filter(({ ends }) => ends <= Date.now());
+                if (inactiveStreams.length > 0) {
+                    inactiveStreams.forEach(streams => streams.stop());
+                    this.db = this.db.filter(({ ends }) => ends >= Date.now());
+                    logger('Db.ts: removing these streams:', inactiveStreams);
+                }
+            } else {
+                logger('DB.ts: no stream is running right nao');
+            }
+        }, duration);
     }
+
+
 
 }
