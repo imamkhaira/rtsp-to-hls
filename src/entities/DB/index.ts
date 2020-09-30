@@ -3,10 +3,8 @@ import { STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/config';
 import { logger } from '@/utils';
 
 export default class StreamDB {
-    private db: Stream[] = [];
-
-    constructor () {
-        setInterval(this.collectGarbageStreams, 10000);
+    constructor (private db: Stream[] = []) {
+        setInterval(() => this.collectGarbageStreams(), 10000);
     }
 
     /**
@@ -60,11 +58,17 @@ export default class StreamDB {
         return unusedPort();
     }
 
+    /**
+     * prune stopped streams from database. to be run periodically by the constructor
+     */
     private collectGarbageStreams(): void {
-        logger('Collecting and removing closed streams');
-        const temp = this.db.filter(streams => streams.ends <= Date.now());
-        this.db = [ ...temp ];
-        logger(`Active streams:`, this.db);
+        if (this.db.length < 1) {
+            const temp = this.db.filter(streams => streams.ends <= Date.now());
+            this.db = [ ...temp ];
+            logger('DB.ts: Collecting and removing closed streams. active:', temp);
+        } else {
+            logger('DB.ts: no stream is running right nao');
+        }
     }
 
 }
