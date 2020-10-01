@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import RouteDocs from '@/types/routedocs';
-import StreamDB from '@/entities/DB';
-import Stream, { StreamRequest, StreamResponse } from '@/entities/Stream';
+import StreamProcessor from '@/processor/StreamProcessor';
+import { StreamRequest, StreamResponse } from '@/entities/Stream';
 
 const route = Router();
 
-const db = new StreamDB();
+const db = new StreamProcessor();
 
 /** start the MPEG live stream */
 route.post('/start', (req, res) => {
@@ -17,9 +16,7 @@ route.post('/start', (req, res) => {
     }
 
     const response: StreamResponse[] = db.startStreams(request)
-        .map(({ id, name, url, port, ends }) => ({
-            id, name, url, port, ends
-        }));
+        .map(streams => streams.streamResponse);
     return res.status(StatusCodes.CREATED).end(JSON.stringify(response));
 });
 
@@ -31,9 +28,7 @@ route.post('/stop', (req, res) => {
         return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
 
     const response: StreamResponse[] = db.stopStreams(request)
-        .map(({ id, name, url, port, ends }) => ({
-            id, name, url, port, ends
-        }));
+        .map(streams => streams.toStreamResponse());
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
 });
 
@@ -44,39 +39,9 @@ route.post('/heartbeat', (req, res) => {
     if (!request.length)
         return res.status(StatusCodes.NOT_ACCEPTABLE).end(`please see docs for example`);
 
-    const response: StreamResponse[] = db.updateHeartbeats(request)
-        .map(({ id, name, url, port, ends }) => ({
-            id, name, url, port, ends
-        }));
+    const response: StreamResponse[] = db.updateHeartbeats(request).map(streams => streams.toStreamResponse());
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
 
-});
-
-route.all('/doc', (req, res) => {
-    return res.end(JSON.stringify([
-        {
-            url: req.baseUrl + '/start',
-            method: 'POST',
-            body: {
-                url: 'string',
-                name: 'string'
-            }
-        },
-        {
-            url: req.baseUrl + '/stop/:streamPort',
-            method: 'POST',
-            body: [
-                'port Numbers'
-            ]
-        },
-        {
-            url: req.baseUrl + '/heartbeat',
-            method: 'POST',
-            body: [
-                'port Numbers'
-            ]
-        }
-    ] as RouteDocs[]));
 });
 
 export default route;
