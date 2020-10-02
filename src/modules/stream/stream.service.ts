@@ -2,13 +2,17 @@ import { STREAM_KEEPALIVE_DURATION, STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/c
 import { logger } from '@/utils';
 import Stream, { StreamRequest, StreamResponse } from './stream.entity';
 
-let newPort = 10;
 class StreamService {
     constructor (private streams: Stream[] = []) { this.garbageCollector(); }
 
     /** create array of streams from array of requests */
     public createStreams(requests: StreamRequest[]): StreamResponse[] {
-        const newstreams = requests.map(param => new Stream(param.name, param.url, newPort++, STREAM_KEEPALIVE_DURATION));
+        const newstreams = requests.map(param => new Stream(
+            param.name,
+            param.url,
+            this.createRandomPort(),
+            STREAM_KEEPALIVE_DURATION
+        ));
         this.streams = this.streams.concat(newstreams);
         return newstreams.map(stream => stream.start().toResponse());
     }
@@ -23,6 +27,13 @@ class StreamService {
     public renewStream(ports: number[]): StreamResponse[] {
         const found = this.findStreamsByPorts(ports);
         return found.map(stream => stream.heartbeat().toResponse());
+    }
+
+    private createRandomPort(count = 0): number {
+        if (count >= STREAM_MAX_PORT - STREAM_MIN_PORT) throw new Error('No ports available');
+        const usedPorts = this.streams.map(({ port }) => port);
+        const newPort = Math.floor(Math.random() * (STREAM_MAX_PORT - STREAM_MIN_PORT)) + STREAM_MIN_PORT;
+        return usedPorts.includes(newPort) ? this.createRandomPort() : newPort;
     }
 
     private findStreamsByPorts(ports: number[]) {
