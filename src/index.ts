@@ -13,5 +13,5 @@ TranscoderApp.use(JSONResponse);
 TranscoderApp.use(Modules);
 
 TranscoderApp.listen(API_PORT, () => {
-  logger(`Example app listening at http://localhost:${API_PORT}`);
+  logger(`Transcoder API listening at http://localhost:${API_PORT}`);
 });

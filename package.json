@@ -6,7 +6,8 @@
     "lint": "tslint --fix --project \"tsconfig.json\"",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
-    "test": "nodemon --config ./spec/nodemon.json"
+    "test": "nodemon --config ./spec/nodemon.json",
+    "commit": "npx git-cz"
   },
   "nodemonConfig": {
     "watch": [

@@ -14,3 +14,7 @@ rootModule.all('/', (req, res) => {
     ]));
 });
 export default rootModule;
+
+// -> : imported by
+// () : instantiate itself
+// Entity -> Processor -> Service() -> Controller -> index.ts

@@ -1,47 +1,42 @@
 import { Router } from 'express';
+import Stream, { StreamRequest } from './stream.entity';
+import StreamService from './stream.service';
 import { StatusCodes } from 'http-status-codes';
-import StreamProcessor from '@/processor/StreamProcessor';
-import { StreamRequest, StreamResponse } from '@/entities/Stream';
+import { logger } from '@/utils';
 
-const route = Router();
+const router = Router();
 
-const db = new StreamProcessor();
+// const name = 'asus';
+// const url = 'rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream';
+// const port = 1234;
 
-/** start the MPEG live stream */
-route.post('/start', (req, res) => {
-    const request = req.body as StreamRequest[];
+// let yonk: Stream;
 
-    if (!request.length) {
-        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
-    }
+router.post('/start', (req, res) => {
+    const request: StreamRequest[] = req.body;
+    if (!request.length) return res.status(StatusCodes.BAD_REQUEST).end(`request body must be an array`);
 
-    const response: StreamResponse[] = db.startStreams(request)
-        .map(streams => streams.streamResponse);
-    return res.status(StatusCodes.CREATED).end(JSON.stringify(response));
+    const newstreams = StreamService.createStreams(req.body);
+    return res.status(StatusCodes.CREATED).end(JSON.stringify(newstreams));
 });
 
-/** stop the MPEG live stream and kill its websocket */
-route.post('/stop', (req, res) => {
-    const request = req.body as number[];
+router.post('/stop', (req, res) => {
+    const request: number[] = req.body;
 
-    if (!request.length)
-        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`request length is ${request.length}`);
+    if (!request.length) return res.status(StatusCodes.BAD_REQUEST).end(`request body must be an array`);
 
-    const response: StreamResponse[] = db.stopStreams(request)
-        .map(streams => streams.toStreamResponse());
+    const response = StreamService.stopStreams(req.body);
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
 });
 
-/** send ping to keep the stream alive */
-route.post('/heartbeat', (req, res) => {
-    const [ request, newEnd ] = [ req.body as number[], Date.now() + 5 * 60000 ];
+router.post('/heartbeat', (req, res) => {
+    const request: number[] = req.body;
 
-    if (!request.length)
-        return res.status(StatusCodes.NOT_ACCEPTABLE).end(`please see docs for example`);
+    if (!request.length) return res.status(StatusCodes.BAD_REQUEST).end(`request body must be an array`);
 
-    const response: StreamResponse[] = db.updateHeartbeats(request).map(streams => streams.toStreamResponse());
+    const response = StreamService.renewStream(request);
     return res.status(StatusCodes.OK).end(JSON.stringify(response));
-
 });
 
-export default route;
+
+export default router;
