@@ -1,7 +1,8 @@
-import Express from 'express';
 import { API_PORT } from '@/config';
-
-const server = Express();
+import Server from '@/server';
+import logger from './shared/Logger';
 
 // Start the server
-server.listen(API_PORT, () => {});
+Server.listen(API_PORT, () => {
+    logger.info(`Server is listening on port ${API_PORT}`);
+});

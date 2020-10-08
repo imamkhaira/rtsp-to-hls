@@ -6,26 +6,26 @@ import cookieParser from 'cookie-parser';
 
 import PrintApiErrors from '@/middlewares/print-api-errors';
 import JSONResHeader from '@/middlewares/json-res-header.ts';
-import BaseRouter from './routes';
+import BaseRouter from './modules';
 
 // Init express
-const Server = express();
+const server = express();
 
 // Set basic Express settings
-Server.use(express.json());
-Server.use(express.urlencoded({ extended: true }));
-Server.use(cookieParser());
-Server.use(PrintApiErrors);
-Server.use(JSONResHeader);
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(cookieParser());
+server.use(PrintApiErrors);
+server.use(JSONResHeader);
 
 // Show routes called in console during development
-if (process.env.NODE_ENV === 'development') Server.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') server.use(morgan('dev'));
 
 // Security
-if (process.env.NODE_ENV === 'production') Server.use(helmet());
+if (process.env.NODE_ENV === 'production') server.use(helmet());
 
 // Add APIs
-Server.use('/api', BaseRouter);
+server.use('/api', BaseRouter);
 
 // Export express instance
-export default Server;
+export default server;

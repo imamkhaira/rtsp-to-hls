@@ -2,7 +2,7 @@ import find from 'find';
 import Jasmine from 'jasmine';
 import dotenv from 'dotenv';
 import commandLineArgs from 'command-line-args';
-import logger from '@shared/Logger';
+import logger from '@/shared/Logger';
 
 // Setup command line options
 const options = commandLineArgs([
@@ -21,7 +21,6 @@ if (result2.error) {
     throw result2.error;
 }
 
-
 // Init Jasmine
 const jasmine = new Jasmine(null);
 
@@ -29,9 +28,7 @@ const jasmine = new Jasmine(null);
 jasmine.loadConfig({
     random: true,
     spec_dir: 'spec',
-    spec_files: [
-        './tests/**/*.spec.ts',
-    ],
+    spec_files: ['./tests/**/*.spec.ts'],
     stopSpecOnExpectationFailure: false,
 });
 
