@@ -1,17 +1,7 @@
-import Express, { json } from 'express';
-import { logger } from '@/utils';
-import JSONResponse from '@/middlewares/json-response';
+import Express from 'express';
 import { API_PORT } from '@/config';
-import Modules from '@/modules';
 
-const TranscoderApp = Express();
+const server = Express();
 
-TranscoderApp.use(Express.json());
-TranscoderApp.use(Express.urlencoded({ extended: true }));
-TranscoderApp.use(JSONResponse);
-
-TranscoderApp.use(Modules);
-
-TranscoderApp.listen(API_PORT, () => {
-  logger(`Transcoder API listening at http://localhost:${API_PORT}`);
-});
+// Start the server
+server.listen(API_PORT, () => {});

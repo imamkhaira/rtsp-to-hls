@@ -1,37 +1,24 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./",
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "outDir": "dist",
-    "removeComments": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "node-rtsp-stream-es6": [
-        "src/@types/node-rtsp-stream-es6"
-      ]
+    "compilerOptions": {
+        "baseUrl": "./",
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "module": "UMD",
+        "outDir": "dist",
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "ESNext",
+        "moduleResolution": "node",
+        "lib": ["ESNext"],
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "types": ["node"],
+        "typeRoots": ["node_modules/@types"]
     },
-    "types": [
-      "node",
-    ],
-    "typeRoots": [
-      "node_modules/@types",
-    ]
-  },
-  "include": [
-    "src/**/*.ts",
-    "spec/**/*.ts"
-  ],
-  "exclude": [
-    "src/public/"
-  ]
+    "include": ["src/**/*.ts", "spec/**/*.ts"],
+    "exclude": ["src/public/"]
 }
