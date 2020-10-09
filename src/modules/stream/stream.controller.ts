@@ -14,4 +14,5 @@ route.post('/stop', (req, res) => {
 route.post('/heartbeat', (req, res) => {
     res.status(StatusCodes.OK).send('pantek heartbeat');
 });
+
 export default route;

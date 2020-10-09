@@ -14,7 +14,8 @@
         "moduleResolution": "node",
         "lib": ["ESNext"],
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "node-rtsp-stream-es6": ["src/@types/node-rtsp-stream-es6"]
         },
         "types": ["node"],
         "typeRoots": ["node_modules/@types"]

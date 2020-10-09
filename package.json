@@ -1,12 +1,13 @@
 {
     "name": "transcoding-server",
-    "version": "0.0.0",
+    "version": "0.1.5",
     "scripts": {
         "build": "node build.js && tsc --build tsconfig.prod.json",
         "lint": "tslint --project \"tsconfig.json\"",
         "start": "node -r module-alias/register ./dist",
         "serve": "nodemon",
-        "test": "nodemon --config ./spec/nodemon.json"
+        "test": "ts-node -r tsconfig-paths/register ./spec",
+        "test:dev": "nodemon --config ./spec/nodemon.json"
     },
     "nodemonConfig": {
         "watch": [
@@ -35,7 +36,9 @@
         "jsonfile": "^6.0.1",
         "module-alias": "^2.2.2",
         "morgan": "^1.10.0",
+        "node-rtsp-stream-es6": "^1.0.7",
         "tslib": "^2.0.2",
+        "uuid": "^8.3.1",
         "winston": "^3.3.3"
     },
     "devDependencies": {
@@ -49,6 +52,7 @@
         "@types/morgan": "^1.9.1",
         "@types/node": "^14.11.5",
         "@types/supertest": "^2.0.10",
+        "@types/uuid": "^8.3.0",
         "find": "^0.3.0",
         "fs-extra": "^9.0.1",
         "jasmine": "^3.6.1",
