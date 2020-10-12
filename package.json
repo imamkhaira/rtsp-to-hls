@@ -36,9 +36,8 @@
         "jsonfile": "^6.0.1",
         "module-alias": "^2.2.2",
         "morgan": "^1.10.0",
-        "node-rtsp-stream-es6": "^1.0.7",
+        "short-uuid": "^4.1.0",
         "tslib": "^2.0.2",
-        "uuid": "^8.3.1",
         "winston": "^3.3.3"
     },
     "devDependencies": {
@@ -52,7 +51,6 @@
         "@types/morgan": "^1.9.1",
         "@types/node": "^14.11.5",
         "@types/supertest": "^2.0.10",
-        "@types/uuid": "^8.3.0",
         "find": "^0.3.0",
         "fs-extra": "^9.0.1",
         "jasmine": "^3.6.1",

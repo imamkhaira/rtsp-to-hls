@@ -1,67 +1,10 @@
-import { v4 as uuid } from 'uuid';
-import RTSPStream from 'node-rtsp-stream-es6';
+import ShortUUID from 'short-uuid';
+import { spawn } from 'child_process';
 import { STREAM_KEEPALIVE_DURATION } from '@/config';
 
-export interface StreamResponse {
-    id: string;
-    name: string;
-    url: string;
-    port: number;
-    duration: number;
-}
-
-export type StreamRequest = {
-    name: string;
-    url: string;
-};
-
-export default class Stream extends RTSPStream implements StreamResponse {
-    shutdownTimer!: NodeJS.Timeout;
-
-    constructor(
-        public name: string,
-        public url: string,
-        public port: number,
-        public duration = STREAM_KEEPALIVE_DURATION,
-        public id = uuid(),
-    ) {
-        super({ name, url, port });
-    }
-
-    public async start(): Promise<Stream> {
-        if (this.duration > 0) {
-            super.start();
-            this.heartbeat();
-        }
-        return this;
-    }
-
-    public async stop(): Promise<Stream> {
-        if (this.duration > 0) {
-            super.stop(() => null);
-            this.duration = this.port = -1;
-            if (this.shutdownTimer) clearTimeout(this.shutdownTimer);
-        }
-        return this;
-    }
-
-    public async heartbeat(): Promise<Stream> {
-        if (this.shutdownTimer) clearTimeout(this.shutdownTimer);
-        if (this.duration > 0)
-            this.shutdownTimer = setTimeout(() => this.stop(), this.duration);
-        return this;
-    }
-
-    public get json(): string {
-        return JSON.stringify({
-            id: this.id,
-            name: this.name,
-            url: this.url,
-            port: this.port,
-            duration: this.duration,
-        } as StreamResponse);
-    }
-}
+// test stream: rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream
+// https://www.cyberciti.biz/tips/what-is-devshm-and-its-practical-usage.html
+// ffmpeg -loglevel panic -rtsp_transport tcp -i $url -c:v libx264 -crf 21 -preset veryfast -g 25 -sc_threshold 0 -c:a aac -b:a 128k -ac 2 -f hls -hls_time 4 -hls_playlist_type event -hls_flags single_file /dev/shm/stream.m3u8
 
 /**
  * test scenarios:
@@ -69,3 +12,14 @@ export default class Stream extends RTSPStream implements StreamResponse {
  * 2. start() -> heartbeat() -> stop() : can, duration n, n, -1
  * 3. start() -> stop() -> heartbeat() : cant, duration n, -1, -1
  */
+
+const FILE_LOCATION = '/dev/shm';
+
+export default class Stream {
+    constructor(
+        public name: string,
+        public url: string,
+        public duration = STREAM_KEEPALIVE_DURATION,
+        private id = ShortUUID.generate(),
+    ) {}
+}
