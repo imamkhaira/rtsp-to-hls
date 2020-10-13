@@ -3,9 +3,10 @@
     "version": "0.1.5",
     "scripts": {
         "build": "node build.js && tsc --build tsconfig.prod.json",
-        "lint": "tslint --project \"tsconfig.json\"",
+        "lint": "tslint --fix --project \"tsconfig.json\"",
         "start": "node -r module-alias/register ./dist",
         "serve": "nodemon",
+        "try": "ts-node -r tsconfig-paths/register ./src",
         "test": "ts-node -r tsconfig-paths/register ./spec",
         "test:dev": "nodemon --config ./spec/nodemon.json"
     },
