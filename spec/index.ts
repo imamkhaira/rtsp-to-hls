@@ -9,7 +9,8 @@ yasmin.loadConfig({
     spec_dir: 'spec',
     spec_files: ['**/*spec.ts'],
     helpers: ['helpers/**/*.ts'],
-    stopSpecOnExpectationFailure: false,
+    stopSpecOnExpectationFailure: true,
+    verbose: true,
     random: false,
 });
 

@@ -38,7 +38,7 @@ export default class Stream {
 
     public get public_m3u8(): string {
         return this.transcoder.isActive
-            ? join(Stream.PUBLIC_PATH, this.transcoder.id, 'index.m3u8')
+            ? join(Stream.PUBLIC_PATH, this.transcoder.id, Transcoder.FILE_NAME)
             : ((null as unknown) as string);
     }
 
@@ -56,5 +56,5 @@ export default class Stream {
 
     public static PUBLIC_PATH = '/streams';
 
-    public static TRANSCODER_DIRECTORY = Transcoder.TRANSCODER_DIRECTORY;
+    public static TRANSCODER_OUTPUT_DIRECTORY = Transcoder.OUTPUT_DIRECTORY;
 }

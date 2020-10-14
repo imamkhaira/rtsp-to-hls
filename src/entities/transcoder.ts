@@ -44,10 +44,10 @@ export default class Transcoder {
                 '-b:a 128k',
                 '-ac 2',
                 '-f hls',
-                '-hls_time 4',
+                '-hls_time 6',
                 '-hls_playlist_type event',
                 '-hls_flags single_file',
-                'index.m3u8',
+                Transcoder.FILE_NAME,
             ],
             { cwd: this.hls_dir, detached: false, shell: true },
         );
@@ -61,6 +61,7 @@ export default class Transcoder {
      */
     public async stop(): Promise<Transcoder> {
         if (!this.isActive) return this;
+
         this.ffmpeg.removeAllListeners().kill('SIGKILL');
         await fs.remove(this.hls_dir);
         return this;
@@ -76,8 +77,7 @@ export default class Transcoder {
 
     /**
      * return the pid of the spawned child process.
-     * otherwise return -1 if ffmpeg is never spawned.
-     * @returns string : the pid of the process or -1
+     * @returns number: the pid or -1
      */
     public get pid() {
         return this.ffmpeg ? this.ffmpeg.pid : -1;
@@ -93,7 +93,7 @@ export default class Transcoder {
     private created_m3u8(): Promise<Transcoder> {
         return new Promise((resolve) => {
             const watcher = fs.watch(this.hls_dir, (event, file) => {
-                if (event === 'rename' && file === 'index.m3u8') {
+                if (file === Transcoder.FILE_NAME) {
                     console.log(`doing -${event}- to file -${file}-`);
                     watcher.removeAllListeners();
                     watcher.close();
@@ -107,14 +107,16 @@ export default class Transcoder {
 
     public static readonly FILE_NAME = 'index.m3u8';
 
-    public static WORKING_DIR = '/dev/shm/node-transcoder';
+    private static WORKING_DIR = '/dev/shm/node-transcoder';
 
-    public static set TRANSCODER_DIRECTORY(dir_path: string) {
+    /** set the Transcoder output directory. will be created if nonexistent */
+    public static set OUTPUT_DIRECTORY(dir_path: string) {
         fs.ensureDirSync(dir_path);
         Transcoder.WORKING_DIR = dir_path;
     }
 
-    public static get TRANSCODER_DIRECTORY() {
+    /** currently set output directory of the Transcoder */
+    public static get OUTPUT_DIRECTORY() {
         return Transcoder.WORKING_DIR;
     }
 }

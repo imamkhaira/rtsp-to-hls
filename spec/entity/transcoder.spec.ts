@@ -1,19 +1,15 @@
 import fs from 'fs-extra';
-import { generate } from 'short-uuid';
-import { performance } from 'perf_hooks';
-import logger from '@/shared/Logger';
 import { STREAM_DIRECTORY } from '@/config';
 import Transcoder from '@/entities/transcoder';
-import { constants } from 'crypto';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-Transcoder.TRANSCODER_DIRECTORY = STREAM_DIRECTORY;
+Transcoder.OUTPUT_DIRECTORY = '/dev/shm/bapak-kao';
 
 describe('Transcoder Entity', function () {
     const ffmpeg = new Transcoder('rtsp://192.168.100.150:554/ch08.264');
 
-    it(`creates ${STREAM_DIRECTORY} folder`, function (done) {
-        expect(fs.existsSync(STREAM_DIRECTORY)).toBeTrue();
+    it(`creates ${Transcoder.OUTPUT_DIRECTORY} folder`, function (done) {
+        expect(fs.existsSync(Transcoder.OUTPUT_DIRECTORY)).toBeTrue();
         done();
     });
 
