@@ -1,105 +1,142 @@
+import path from 'path';
 import fs from 'fs-extra';
-import { join } from 'path';
-import { ChildProcess, spawn } from 'child_process';
-import logger from '@/shared/Logger';
+import short_uuid from 'short-uuid';
+import child_process from 'child_process';
 
-export class Transcoder {
-    public static ROOT_DIR: string;
+export default class Transcoder {
+    public readonly id: string;
 
-    public readonly hls_dir!: string;
+    public readonly url: string;
 
-    private ffmpeg!: ChildProcess;
+    public readonly hls_dir: string;
 
-    constructor(public readonly id: string, public readonly url: string) {
-        this.hls_dir = join(Transcoder.ROOT_DIR, id);
+    private ffmpeg!: child_process.ChildProcess;
+
+    constructor(url: string) {
+        this.id = short_uuid.generate();
+        this.url = url;
+        this.hls_dir = path.join(Transcoder.WORKING_DIR, this.id);
     }
 
-    public async start(): Promise<number> {
-        if (!this.isActive) {
-            await fs.ensureDir(this.hls_dir);
-            this.ffmpeg = spawn(
-                'ffmpeg',
-                [
-                    '-rtsp_transport tcp',
-                    `-i ${this.url}`,
-                    '-c:v libx264',
-                    '-crf 21',
-                    '-preset veryfast',
-                    '-g 25',
-                    '-sc_threshold 0',
-                    '-c:a aac',
-                    '-b:a 128k',
-                    '-ac 2',
-                    '-f hls',
-                    '-hls_time 4',
-                    '-hls_playlist_type event',
-                    '-hls_flags single_file',
-                    this.m3u8,
-                ],
-                { detached: false },
-            );
+    /* ---------------------- Publics ---------------------- */
 
-            this.ffmpeg.stdout?.on('data', (chunk) =>
-                logger.info(`data is ${chunk}`),
-            );
-        }
-        return this.ffmpeg.pid;
+    /**
+     * if the process hasnt started, create a named folder in
+     * the root directory, then spawns a ffmpeg process. returns
+     * the pid if the HLS index file has been successfully created.
+     * @returns number: pid of ffmpeg process
+     */
+    public async start(): Promise<Transcoder> {
+        if (this.isActive) return this;
+
+        await fs.ensureDir(this.hls_dir);
+        this.ffmpeg = child_process.spawn(
+            'ffmpeg',
+            [
+                '-rtsp_transport tcp',
+                `-i ${this.url}`,
+                '-c:v libx264',
+                '-crf 21',
+                '-preset veryfast',
+                '-g 25 ',
+                '-sc_threshold 0',
+                '-c:a aac',
+                '-b:a 128k',
+                '-ac 2',
+                '-f hls',
+                '-hls_time 4',
+                '-hls_playlist_type event',
+                '-hls_flags single_file',
+                'index.m3u8',
+            ],
+            { cwd: this.hls_dir, detached: false, shell: true },
+        );
+        return await this.created_m3u8();
     }
 
-    public async stop(): Promise<number> {
-        if (this.isActive) {
-            const pid = this.ffmpeg.pid;
-            this.ffmpeg.removeAllListeners().kill();
-            await fs.remove(this.hls_dir);
-            return pid;
-        }
-        return -1;
+    /**
+     * if ffmpeg hasnt stopped, kill ffmpeg process then
+     * remove the named directory and return the killed pid;
+     * @returns number: pid of killed process
+     */
+    public async stop(): Promise<Transcoder> {
+        if (!this.isActive) return this;
+        this.ffmpeg.removeAllListeners().kill('SIGKILL');
+        await fs.remove(this.hls_dir);
+        return this;
     }
 
+    /**
+     * get the status of the process
+     * @returns boolean
+     */
     public get isActive(): boolean {
         return this.ffmpeg ? !this.ffmpeg.killed : false;
     }
 
-    public get process_pid(): number {
-        return this.ffmpeg.pid;
+    /**
+     * return the pid of the spawned child process.
+     * otherwise return -1 if ffmpeg is never spawned.
+     * @returns string : the pid of the process or -1
+     */
+    public get pid() {
+        return this.ffmpeg ? this.ffmpeg.pid : -1;
     }
 
-    public get m3u8(): string {
-        return join(this.hls_dir, 'index.m3u8');
+    /* ---------------------- Privats ---------------------- */
+
+    /**
+     * watch the work dir for index.m3u8 file.
+     * when the file is created, return this instance
+     * and kill the watcher
+     */
+    private created_m3u8(): Promise<Transcoder> {
+        return new Promise((resolve) => {
+            const watcher = fs.watch(this.hls_dir, (event, file) => {
+                if (event === 'rename' && file === 'index.m3u8') {
+                    console.log(`doing -${event}- to file -${file}-`);
+                    watcher.removeAllListeners();
+                    watcher.close();
+                    return resolve(this);
+                }
+            });
+        });
+    }
+
+    /* ---------------------- Statics ---------------------- */
+
+    public static readonly FILE_NAME = 'index.m3u8';
+
+    public static WORKING_DIR = '/dev/shm/node-transcoder';
+
+    public static set TRANSCODER_DIRECTORY(dir_path: string) {
+        fs.ensureDirSync(dir_path);
+        Transcoder.WORKING_DIR = dir_path;
+    }
+
+    public static get TRANSCODER_DIRECTORY() {
+        return Transcoder.WORKING_DIR;
     }
 }
 
-export default function TranscoderGenerator(root_path: string) {
-    fs.ensureDirSync(root_path);
-    Transcoder.ROOT_DIR = root_path;
-    return Transcoder;
-}
-
-/*
-const hls_dir = path.join(root_dir, id);
-    const process = spawn('ffmpeg', [
-        '-rtsp_transport tcp',
-        `-i ${url}`,
-        '-c:v libx264',
-        '-crf 21',
-        '-preset veryfast',
-        '-g 25',
-        '-sc_threshold 0',
-        '-c:a aac',
-        '-b:a 128k',
-        '-ac 2',
-        '-f hls',
-        '-hls_time 4',
-        '-hls_playlist_type event',
-        '-hls_flags single_file',
-        path.join(hls_dir, 'stream.m3u8'),
-    ]);
-
-rtsp://192.168.100.150:554/ch07.264
-rtsp://192.168.100.150:554/ch08.264
-
-url=rtsp://192.168.100.150:554/ch08.264
-
-ffmpeg -rtsp_transport tcp -i $url -c:v libx264 -crf 21 -preset veryfast -g 25 -sc_threshold 0 -c:a aac -b:a 128k -ac 2 -f hls -hls_time 4 -hls_playlist_type event -hls_flags single_file /dev/shm/jokowi/t123/index.m3u8
-        
- */
+// test code
+// fs.ensureDirSync(Transcoder.STREAM_DIRECTORY);
+// let test = new Transcoder('rtsp://192.168.100.150:554/ch08.264');
+// test.start()
+//     .then((proc) => {
+//         console.log(
+//             `Active with id: ${proc.id}, pid: ${proc.pid} directory: ${proc.hls_dir}`,
+//         );
+//         console.log(
+//             'file m3u8 exists:',
+//             fs.existsSync(proc.hls_dir + '/index.m3u8'),
+//         );
+//         return proc.stop();
+//     })
+//     .then((proc) => {
+//         console.log(`Inactive with pid: ${proc.pid}`);
+//         console.log(
+//             'file m3u8 exists:',
+//             fs.existsSync(proc.hls_dir + '/index.m3u8'),
+//         );
+//     });

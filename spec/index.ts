@@ -10,7 +10,7 @@ yasmin.loadConfig({
     spec_files: ['**/*spec.ts'],
     helpers: ['helpers/**/*.ts'],
     stopSpecOnExpectationFailure: false,
-    random: true,
+    random: false,
 });
 
 // On complete callback function
