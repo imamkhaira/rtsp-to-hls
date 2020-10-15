@@ -1,60 +1,51 @@
+import path from 'path';
 import Transcoder from './transcoder';
-import { join } from 'path';
 
-export default class Stream {
-    private transcoder: Transcoder;
+export interface StreamInterface {
+    readonly duration: number;
+    readonly public_index: string;
+    heartbeat(): boolean;
+}
 
-    private timeout: NodeJS.Timeout | undefined;
-
+export default class Stream extends Transcoder implements StreamInterface {
     constructor(public readonly url: string, public readonly duration: number) {
-        this.transcoder = new Transcoder(url);
+        super(url);
     }
 
-    /* ---------------------- Publics ---------------------- */
-
-    public async start() {
-        if (this.transcoder.isActive) return this;
-
-        await this.transcoder.start();
-        this.timeout = this.createTimeout();
+    public async start(): Promise<Stream> {
+        if (this.isActive) return this;
+        await super.start();
+        this.timeout = setTimeout(() => this.stop(), this.duration);
         return this;
     }
 
-    public async stop() {
-        if (!this.transcoder.isActive) return this;
-
-        await this.transcoder.stop();
-        this.timeout = this.deleteTimeout();
+    public async stop(): Promise<Stream> {
+        if (!this.isActive) return this;
+        await super.stop();
+        clearTimeout(this.timeout);
         return this;
     }
 
-    public heartbeat() {
-        if (!this.transcoder.isActive) return false;
+    /** reset the timeout of the process only when the process is active */
+    public heartbeat(): boolean {
+        if (!this.isActive) return false;
 
-        this.timeout = this.deleteTimeout();
-        this.timeout = this.createTimeout();
+        this.timeout = this.timeout.refresh();
         return true;
     }
 
-    public get public_m3u8(): string {
-        return this.transcoder.isActive
-            ? join(Stream.PUBLIC_PATH, this.transcoder.id, Transcoder.FILE_NAME)
-            : ((null as unknown) as string);
+    /** return the public location of index.m3u8 */
+    public get public_index() {
+        return path.join(Stream.PUBLIC_PATH, this.id, Stream.FILE_NAME);
     }
 
-    /* ---------------------- Privates ---------------------- */
+    /* ----------------------------------------------------- */
+    /* ---------------------- Privats ---------------------- */
 
-    private createTimeout() {
-        return setTimeout(() => this.stop(), this.duration);
-    }
+    private timeout!: NodeJS.Timeout;
 
-    private deleteTimeout() {
-        return void (this.timeout && clearTimeout(this.timeout));
-    }
-
+    /* ----------------------------------------------------- */
     /* ---------------------- Statics ---------------------- */
 
-    public static PUBLIC_PATH = '/streams';
-
-    public static TRANSCODER_OUTPUT_DIRECTORY = Transcoder.OUTPUT_DIRECTORY;
+    public static PUBLIC_PATH = './public';
 }

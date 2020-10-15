@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import { STREAM_DIRECTORY } from '@/config';
 import Transcoder from '@/entities/transcoder';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 40000;
 Transcoder.OUTPUT_DIRECTORY = '/dev/shm/bapak-kao';
 
 describe('Transcoder Entity', function () {
@@ -15,7 +15,7 @@ describe('Transcoder Entity', function () {
 
     it(`starts properly`, function (done) {
         ffmpeg.start().then((started) => {
-            expect(started.pid).toBeGreaterThan(0);
+            expect(started.isActive).toBeTrue();
             done();
         });
     });
