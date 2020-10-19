@@ -1,63 +1,47 @@
-// import Stream, from '@/entities/stream';
-// import { STREAM_MAX_PORT, STREAM_MIN_PORT } from '@/config';
+import Stream from '@/entities/stream';
+import StreamDB from '@/entities/stream-db';
+import {
+    STREAM_DIRECTORY,
+    STREAM_PUBLIC_PATH,
+    STREAM_DURATION,
+} from '@/config';
+import { stream } from 'winston';
 
-// const streams = [] as Stream[];
+Stream.OUTPUT_DIRECTORY = STREAM_DIRECTORY;
+Stream.PUBLIC_PATH = STREAM_PUBLIC_PATH;
 
-// export default class StreamProcessor {
-//     public static readonly MAX_PORTS = STREAM_MAX_PORT - STREAM_MIN_PORT;
+export interface StreamProcessorInstance {
+    startStreams(urls: string[]): Promise<Stream[]>;
+    stopStreams(ids: string[]): Promise<Stream[]>;
+    beatStreams(ids: string[]): boolean[];
 
-//     /** create an array of numbers that contains available port numbers */
-//     private getAvailablePorts(count: number): number[] {
-//         const usedPorts = streams.map(({ port }) => port);
-//         const getPort = (): number => {
-//             const newPort = Math.floor(
-//                 Math.random() * (STREAM_MAX_PORT - STREAM_MIN_PORT) +
-//                     STREAM_MIN_PORT,
-//             );
-//             return usedPorts.includes(newPort) ? getPort() : newPort;
-//         };
+    readonly duration: number;
+}
 
-//         return [...Array(count).keys()].map(() => {
-//             const newPort = getPort();
-//             usedPorts.push(newPort);
-//             return newPort;
-//         });
-//     }
+const active_streams = new StreamDB();
 
-//     /** returns an array that contains [the filter result, and a true if it is filtered]  */
-//     private filterAvailable(req: StreamRequest[]): [StreamRequest[], boolean] {
-//         const avail = StreamProcessor.MAX_PORTS - streams.length;
+export class StreamProcessor implements StreamProcessorInstance {
+    constructor(public readonly duration: number) {}
 
-//         if (avail < req.length) return [req.slice(0, Math.max(0, avail)), true];
-//         return [req, false];
-//     }
+    public async startStreams(urls: string[]): Promise<Stream[]> {
+        const new_streams = urls.map((url) => new Stream(url, this.duration));
+        const starting_streams = new_streams.map((stream) => stream.start());
+        const started_streams = await Promise.all(starting_streams);
 
-//     /** create a stream from an array of filtered requests */
-//     public createStreams(requests: StreamRequest[]): Promise<Stream>[] {
-//         const filtered = this.filterAvailable(requests);
-//         const newports = this.getAvailablePorts(filtered[0].length);
+        return active_streams.insert(started_streams) as Stream[];
+    }
 
-//         const newstreams = filtered[0].map(
-//             (req, i) => new Stream(req.name, req.url, newports[i]),
-//         );
-//         return newstreams.map((stream) => stream.start());
-//     }
+    public async stopStreams(ids: string[]): Promise<Stream[]> {
+        const to_stop = active_streams.find(ids) as Stream[];
+        const stopping = to_stop.map((stream) => stream.stop());
+        const stopped = await Promise.all(stopping);
 
-//     public stopStreams(ports: number[]): Promise<Stream>[] {
-//         const found = streams.filter(({ port }) => ports.includes(port));
-//         return found.map((stream) => stream.stop());
-//     }
+        return active_streams.remove(stopped) as Stream[];
+    }
 
-//     public beatStreams(ports: number[]): Promise<Stream>[] {
-//         const found = streams.filter(({ port }) => ports.includes(port));
-//         return found.map((stream) => stream.heartbeat());
-//     }
-
-//     private sweep(interval = 60000) {
-//         return setInterval(() => {
-//             if (streams.length > 0) {
-//                 streams.filter((streams) => streams.duration > 0);
-//             }
-//         }, 60000);
-//     }
-// }
+    public beatStreams(ids: string[]) {
+        const to_beat = active_streams.find(ids) as Stream[];
+        const beated = to_beat.map((stream) => stream.heartbeat());
+        return beated;
+    }
+}

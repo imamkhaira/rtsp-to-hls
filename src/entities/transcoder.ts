@@ -1,7 +1,16 @@
+/**
+url=rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream
+url=rtsp://192.168.100.150:554/ch09.264
+loglevel=fatal
+ffmpeg -fflags nobuffer -rtsp_transport tcp -i $url -timeout 5 -c:v copy -preset veryfast -c:a copy \
+-ac 1 -f hls -hls_flags delete_segments+append_list index.m3u8
+ */
+
 import path from 'path';
 import fs from 'fs-extra';
 import short_uuid from 'short-uuid';
 import child_process from 'child_process';
+import internal from 'stream';
 
 export interface TranscoderInstance {
     readonly id: string;
@@ -12,13 +21,13 @@ export interface TranscoderInstance {
     stop(): Promise<TranscoderInstance>;
 }
 
-export default class Transcoder implements TranscoderInstance {
+export default abstract class Transcoder implements TranscoderInstance {
     public readonly id: string;
 
     public readonly hls_dir: string;
 
     constructor(public readonly url: string) {
-        this.id = short_uuid('zurahmi').generate();
+        this.id = short_uuid('tilakocheng').generate();
         this.hls_dir = path.join(Transcoder.OUTPUT_DIR, this.id);
     }
 
@@ -34,24 +43,20 @@ export default class Transcoder implements TranscoderInstance {
         this.ffmpeg = child_process.spawn(
             'ffmpeg',
             [
-                '-rtsp_transport tcp',
+                `-loglevel error`,
+                `-fflags nobuffer`,
+                `-rtsp_transport tcp`,
                 `-i ${this.url}`,
-                '-c:v libx264',
-                '-crf 21',
-                '-preset veryfast',
-                '-g 25 ',
-                '-sc_threshold 0',
-                '-c:a aac',
-                '-b:a 128k',
-                '-ac 2',
-                '-f hls',
-                '-hls_time 6',
-                '-hls_playlist_type event',
-                '-hls_flags single_file',
+                `-c:v copy -preset veryfast`,
+                `-c:a copy -ac 1`,
+                `-f hls`,
+                `-hls_flags delete_segments+append_list`,
                 Transcoder.FILE_NAME,
             ],
+
             { cwd: this.hls_dir, detached: false, shell: true },
         );
+
         return await this.created_m3u8();
     }
 

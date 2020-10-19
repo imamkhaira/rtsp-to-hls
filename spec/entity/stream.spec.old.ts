@@ -9,7 +9,7 @@ describe(`Stream Entitiy`, function () {
     beforeAll(() => {
         Stream.OUTPUT_DIRECTORY = '/dev/shm/jkw';
         Stream.PUBLIC_PATH = './public';
-        test = new Stream('rtsp://192.168.100.150:554/ch08.264', 60000);
+        test = new Stream('rtsp://192.168.100.150:554/ch09.264', 60000);
     });
 
     it(`creates the output folder`, function (done) {
