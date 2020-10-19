@@ -6,7 +6,7 @@ export interface StreamDBInstance {
     find(ids: string[]): StreamLikeInstance[];
     insert(instances: StreamLikeInstance[]): StreamLikeInstance[];
     remove(instances: StreamLikeInstance[]): StreamLikeInstance[];
-    update(instances: StreamLikeInstance[]): StreamLikeInstance[];
+    replace(instances: StreamLikeInstance[]): StreamLikeInstance[];
 
     readonly length: number;
 }
@@ -44,7 +44,7 @@ export default class StreamDB implements StreamDBInstance {
         return toReturn;
     }
 
-    public update(instances: StreamLikeInstance[]): StreamLikeInstance[] {
+    public replace(instances: StreamLikeInstance[]): StreamLikeInstance[] {
         const toReturn = [] as StreamLikeInstance[];
 
         this.forEachMatchesOf(instances, (storageIndex, instance) => {

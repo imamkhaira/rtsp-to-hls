@@ -59,7 +59,7 @@ describe(`Stream Database`, function () {
         const result = test.find(['2']);
         result[0] = new DemoStream('1', 'updated');
 
-        test.update(result);
+        test.replace(result);
 
         const newResult = test.find(['2']);
         expect(result[0].content).not.toBe(newResult[0].content);

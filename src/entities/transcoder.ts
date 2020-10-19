@@ -10,7 +10,6 @@ import path from 'path';
 import fs from 'fs-extra';
 import short_uuid from 'short-uuid';
 import child_process from 'child_process';
-import internal from 'stream';
 
 export interface TranscoderInstance {
     readonly id: string;

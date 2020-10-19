@@ -47,9 +47,3 @@ export default class Stream extends Transcoder implements StreamInstance {
 
     public static PUBLIC_PATH = './public';
 }
-
-const test = new Stream('rtsp://192.168.100.150:554/ch09.264', 10000);
-
-test.start().then((started) => {
-    console.log(`started is ${started.isActive} with id ${started.id}`);
-});
