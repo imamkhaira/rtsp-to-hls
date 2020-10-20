@@ -12,7 +12,7 @@ export interface StreamerDBInstance {
 }
 
 export default class StreamerDB implements StreamerDBInstance {
-    private storage = [] as InstanceWithID[];
+    private readonly storage = [] as InstanceWithID[];
 
     /**
      * finds items by their IDs, accepts array of string ids and
@@ -32,11 +32,8 @@ export default class StreamerDB implements StreamerDBInstance {
 
     /** insert array of instances into storage. returns inserted instances */
     public insert(instances: InstanceWithID[]): InstanceWithID[] {
-        const pushed = [] as InstanceWithID[];
-        instances.forEach((instance) => {
-            pushed.push(this.storage[this.storage.push(instance) - 1]);
-        });
-        return pushed;
+        this.storage.push(...instances);
+        return instances;
     }
 
     /**

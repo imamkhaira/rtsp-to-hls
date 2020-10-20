@@ -1,24 +1,41 @@
 import Streamer from '@/entities/streamer';
 import StreamerDB from '@/entities/streamer-db';
+import { Stream } from 'stream';
 
 export default class PlaybackProcessor {
-    private db: StreamerDB;
+    private readonly db: StreamerDB;
 
     constructor(public readonly duration: number) {
         this.db = new StreamerDB();
+        setInterval(() => this.sweepInactive(), duration * 0.5);
     }
 
-    public async createPlayback(url: string) {
-        const created = new Streamer(url, this.duration).start();
-        return this.db.insert([await created]);
+    public createPlayback(url: string): Promise<Streamer> {
+        const added = this.db.insert([new Streamer(url, this.duration)]);
+
+        return (added[0] as Streamer).start();
     }
 
-    public async destroyPlayback(id: string) {
+    public destroyPlayback(id: string): Promise<Streamer> {
         const found = this.db.find([id]);
-        const removed = (this.db.remove(found) as Streamer[]).map((replay) =>
-            replay.stop(),
+
+        return (this.db.remove(found)[0] as Streamer).stop();
+    }
+
+    public beatPlayback(id: string): Streamer {
+        const found = this.db.find([id])[0] as Streamer;
+
+        found.heartbeat();
+        return found;
+    }
+
+    private sweepInactive() {
+        if (this.db.length < 1) return;
+        const inactive = (this.db.find() as Streamer[]).filter(
+            (replay) => !replay.isActive,
         );
 
-        return Promise.all(removed);
+        if (inactive.length < 1) return;
+        this.db.remove(inactive);
     }
 }

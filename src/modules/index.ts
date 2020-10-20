@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import UserRouter from './stream/stream.controller';
+import LiveModule from './live/live.controller';
+import PlaybackModule from './playback/playback.controller';
 
 // Init router and path
 const router = Router();
 
 // Add sub-routes
-router.use('/transcode', UserRouter);
+router.use('/livestream', LiveModule);
+router.use('/playback', PlaybackModule);
 
 // Export the base-router
 export default router;
