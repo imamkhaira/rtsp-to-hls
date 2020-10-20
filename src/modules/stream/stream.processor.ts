@@ -21,7 +21,9 @@ export interface StreamProcessorInstance {
 const active_streams = new StreamDB();
 
 export class StreamProcessor implements StreamProcessorInstance {
-    constructor(public readonly duration: number) {}
+    constructor(public readonly duration: number) {
+        setInterval(() => this.purgeStopped(), 60000);
+    }
 
     public async startStreams(urls: string[]): Promise<Stream[]> {
         const new_streams = urls.map((url) => new Stream(url, this.duration));
@@ -43,5 +45,15 @@ export class StreamProcessor implements StreamProcessorInstance {
         const to_beat = active_streams.find(ids) as Stream[];
         const beated = to_beat.map((stream) => stream.heartbeat());
         return beated;
+    }
+
+    private purgeStopped() {
+        if (active_streams.length < 1) return;
+
+        const inactive = (active_streams.find() as Stream[]).filter(
+            (streams) => !streams.isActive,
+        );
+
+        active_streams.remove(inactive);
     }
 }

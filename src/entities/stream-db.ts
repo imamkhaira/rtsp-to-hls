@@ -14,9 +14,10 @@ export interface StreamDBInstance {
 export default class StreamDB implements StreamDBInstance {
     private storage = [] as StreamLikeInstance[];
 
-    public find(ids: string[]): StreamLikeInstance[] {
-        const toReturn = [] as StreamLikeInstance[];
+    public find(ids = (null as unknown) as string[]): StreamLikeInstance[] {
+        if (ids === null) return this.storage;
 
+        const toReturn = [] as StreamLikeInstance[];
         ids.forEach((id) => {
             const index = this.storage.findIndex((item) => item.id === id);
             if (index > -1) toReturn.push(this.storage[index]);
