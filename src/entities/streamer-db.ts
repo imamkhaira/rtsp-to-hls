@@ -14,6 +14,10 @@ export interface StreamerDBInstance {
 export default class StreamerDB implements StreamerDBInstance {
     private storage = [] as InstanceWithID[];
 
+    /**
+     * finds items by their IDs, accepts array of string ids and
+     * return array of matching instances
+     */
     public find(ids = (null as unknown) as string[]): InstanceWithID[] {
         if (ids === null) return this.storage;
 
@@ -26,39 +30,53 @@ export default class StreamerDB implements StreamerDBInstance {
         return toReturn;
     }
 
+    /** insert array of instances into storage. returns inserted instances */
     public insert(instances: InstanceWithID[]): InstanceWithID[] {
-        const copyofInstances = instances;
-        this.forEachMatchesOf(instances, (eh, oh, instanceIndex) => {
-            copyofInstances.splice(instanceIndex);
+        const pushed = [] as InstanceWithID[];
+        instances.forEach((instance) => {
+            pushed.push(this.storage[this.storage.push(instance) - 1]);
         });
-        this.storage.push(...copyofInstances);
-        return copyofInstances;
+        return pushed;
     }
 
+    /**
+     * remove array of instances with similiar IDs from storage.
+     * returns removed instances
+     */
     public remove(instances: InstanceWithID[]): InstanceWithID[] {
-        const toReturn = [] as InstanceWithID[];
+        const removed = [] as InstanceWithID[];
 
         this.forEachMatchesOf(instances, (storageIndex) => {
-            toReturn.push(...this.storage.splice(storageIndex, 1));
+            removed.push(...this.storage.splice(storageIndex, 1));
         });
 
-        return toReturn;
+        return removed;
     }
 
+    /**
+     * replace instances with instances from an array with matchings IDs.
+     * returns replaced instances
+     */
     public replace(instances: InstanceWithID[]): InstanceWithID[] {
-        const toReturn = [] as InstanceWithID[];
+        const replaced = [] as InstanceWithID[];
 
         this.forEachMatchesOf(instances, (storageIndex, instance) => {
-            toReturn.push((this.storage[storageIndex] = instance));
+            replaced.push((this.storage[storageIndex] = instance));
         });
 
-        return toReturn;
+        return replaced;
     }
 
+    /** get count of stored instances */
     public get length() {
         return this.storage.length;
     }
 
+    /**
+     * Perform callback actions for each item in instances
+     * @param instances - array of instances
+     * @param callback - action to fo for each instances
+     */
     private forEachMatchesOf(
         instances: InstanceWithID[],
         callback: (
