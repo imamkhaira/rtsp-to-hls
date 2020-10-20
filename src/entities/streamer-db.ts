@@ -1,23 +1,23 @@
-export interface StreamLikeInstance extends Record<string, any> {
+export interface InstanceWithID extends Record<string, any> {
     id: string;
 }
 
-export interface StreamDBInstance {
-    find(ids: string[]): StreamLikeInstance[];
-    insert(instances: StreamLikeInstance[]): StreamLikeInstance[];
-    remove(instances: StreamLikeInstance[]): StreamLikeInstance[];
-    replace(instances: StreamLikeInstance[]): StreamLikeInstance[];
+export interface StreamerDBInstance {
+    find(ids: string[]): InstanceWithID[];
+    insert(instances: InstanceWithID[]): InstanceWithID[];
+    remove(instances: InstanceWithID[]): InstanceWithID[];
+    replace(instances: InstanceWithID[]): InstanceWithID[];
 
     readonly length: number;
 }
 
-export default class StreamDB implements StreamDBInstance {
-    private storage = [] as StreamLikeInstance[];
+export default class StreamerDB implements StreamerDBInstance {
+    private storage = [] as InstanceWithID[];
 
-    public find(ids = (null as unknown) as string[]): StreamLikeInstance[] {
+    public find(ids = (null as unknown) as string[]): InstanceWithID[] {
         if (ids === null) return this.storage;
 
-        const toReturn = [] as StreamLikeInstance[];
+        const toReturn = [] as InstanceWithID[];
         ids.forEach((id) => {
             const index = this.storage.findIndex((item) => item.id === id);
             if (index > -1) toReturn.push(this.storage[index]);
@@ -26,7 +26,7 @@ export default class StreamDB implements StreamDBInstance {
         return toReturn;
     }
 
-    public insert(instances: StreamLikeInstance[]): StreamLikeInstance[] {
+    public insert(instances: InstanceWithID[]): InstanceWithID[] {
         const copyofInstances = instances;
         this.forEachMatchesOf(instances, (eh, oh, instanceIndex) => {
             copyofInstances.splice(instanceIndex);
@@ -35,8 +35,8 @@ export default class StreamDB implements StreamDBInstance {
         return copyofInstances;
     }
 
-    public remove(instances: StreamLikeInstance[]): StreamLikeInstance[] {
-        const toReturn = [] as StreamLikeInstance[];
+    public remove(instances: InstanceWithID[]): InstanceWithID[] {
+        const toReturn = [] as InstanceWithID[];
 
         this.forEachMatchesOf(instances, (storageIndex) => {
             toReturn.push(...this.storage.splice(storageIndex, 1));
@@ -45,8 +45,8 @@ export default class StreamDB implements StreamDBInstance {
         return toReturn;
     }
 
-    public replace(instances: StreamLikeInstance[]): StreamLikeInstance[] {
-        const toReturn = [] as StreamLikeInstance[];
+    public replace(instances: InstanceWithID[]): InstanceWithID[] {
+        const toReturn = [] as InstanceWithID[];
 
         this.forEachMatchesOf(instances, (storageIndex, instance) => {
             toReturn.push((this.storage[storageIndex] = instance));
@@ -60,10 +60,10 @@ export default class StreamDB implements StreamDBInstance {
     }
 
     private forEachMatchesOf(
-        instances: StreamLikeInstance[],
+        instances: InstanceWithID[],
         callback: (
             index_in_storage: number,
-            instance: StreamLikeInstance,
+            instance: InstanceWithID,
             instanceIndex: number,
         ) => void,
     ) {

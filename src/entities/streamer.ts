@@ -1,25 +1,25 @@
 import path from 'path';
 import Transcoder from './transcoder';
 
-export interface StreamInstance {
+export interface StreamerInstance {
     readonly duration: number;
     readonly public_index: string;
     heartbeat(): boolean;
 }
 
-export default class Stream extends Transcoder implements StreamInstance {
+export default class Streamer extends Transcoder implements StreamerInstance {
     constructor(public readonly url: string, public readonly duration: number) {
         super(url);
     }
 
-    public async start(): Promise<Stream> {
+    public async start(): Promise<Streamer> {
         if (this.isActive) return this;
         await super.start();
         this.timeout = setTimeout(() => this.stop(), this.duration);
         return this;
     }
 
-    public async stop(): Promise<Stream> {
+    public async stop(): Promise<Streamer> {
         if (!this.isActive) return this;
         await super.stop();
         return this;
@@ -34,7 +34,7 @@ export default class Stream extends Transcoder implements StreamInstance {
 
     /** return the public location of index.m3u8 */
     public get public_index() {
-        return path.join(Stream.PUBLIC_PATH, this.id, Stream.FILE_NAME);
+        return path.join(Streamer.PUBLIC_PATH, this.id, Streamer.FILE_NAME);
     }
 
     /* ----------------------------------------------------- */

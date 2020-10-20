@@ -4,7 +4,7 @@ url=rtsp://192.168.100.150:554/ch09.264
 loglevel=fatal
 ffmpeg -fflags nobuffer -rtsp_transport tcp -i $url -timeout 5 -c:v copy -preset veryfast -c:a copy \
 -ac 1 -f hls -hls_flags delete_segments+append_list index.m3u8
- */
+*/
 
 import path from 'path';
 import fs from 'fs-extra';
@@ -14,7 +14,6 @@ import child_process from 'child_process';
 export interface TranscoderInstance {
     readonly id: string;
     readonly url: string;
-    readonly hls_dir: string;
     readonly isActive: boolean;
     start(): Promise<TranscoderInstance>;
     stop(): Promise<TranscoderInstance>;
@@ -22,8 +21,6 @@ export interface TranscoderInstance {
 
 export default abstract class Transcoder implements TranscoderInstance {
     public readonly id: string;
-
-    public readonly hls_dir: string;
 
     constructor(public readonly url: string) {
         this.id = short_uuid('tilakocheng').generate();
@@ -70,6 +67,8 @@ export default abstract class Transcoder implements TranscoderInstance {
 
     /* ----------------------------------------------------- */
     /* ---------------------- Privats ---------------------- */
+
+    private readonly hls_dir: string;
 
     private ffmpeg!: child_process.ChildProcess;
 
