@@ -52,4 +52,11 @@ export default class PlaybackServices {
             );
         }
     }
+
+    public getRunning(): string {
+        const all = this.processor
+            .getRunningPlaybacks()
+            .map((stream) => stream.info);
+        return createResponse(all);
+    }
 }

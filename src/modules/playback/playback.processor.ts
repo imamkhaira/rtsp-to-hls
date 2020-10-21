@@ -28,6 +28,13 @@ export default class PlaybackProcessor {
         return found;
     }
 
+    public getRunningPlaybacks(): Streamer[] {
+        return this.db.find() as Streamer[];
+    }
+
+    /* ----------------------------------------------------- */
+    /* ---------------------- Privats ---------------------- */
+
     private sweepInactive() {
         if (this.db.length < 1) return;
         const inactive = (this.db.find() as Streamer[]).filter(

@@ -27,4 +27,10 @@ route.post('/heartbeat', (req, res) => {
     res.status(HTTP.OK).send(response);
 });
 
+route.post('/all', (req, res) => {
+    const response = service.getRunning();
+
+    res.status(HTTP.OK).end(response);
+});
+
 export default route;

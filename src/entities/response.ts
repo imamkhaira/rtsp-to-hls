@@ -1,10 +1,4 @@
 export * as StatusCodes from 'http-status-codes';
-export interface ResponseInterface {
-    error: boolean;
-    message: string;
-    more_info: string;
-    data: any;
-}
 
 /** create a new Response object */
 export default (

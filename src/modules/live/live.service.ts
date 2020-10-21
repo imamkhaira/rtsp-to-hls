@@ -56,7 +56,9 @@ export default class LiveServices {
     }
 
     public getRunning(): string {
-        const all = this.processor.getRunningLiveStreams().map(stream => stream.info)
-        return createResponse(all)
+        const all = this.processor
+            .getRunningLiveStreams()
+            .map((stream) => stream.info);
+        return createResponse(all);
     }
 }

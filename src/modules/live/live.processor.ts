@@ -34,6 +34,9 @@ export default class LiveProcessor {
         return this.db.find() as Streamer[];
     }
 
+    /* ----------------------------------------------------- */
+    /* ---------------------- Privats ---------------------- */
+
     private sweepInactive() {
         if (this.db.length < 1) return;
 
