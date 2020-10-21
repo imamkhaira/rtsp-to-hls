@@ -14,7 +14,7 @@ import child_process from 'child_process';
 export interface TranscoderInstance {
     readonly id: string;
     readonly url: string;
-    readonly isActive: boolean;
+    readonly is_active: boolean;
     start(): Promise<TranscoderInstance>;
     stop(): Promise<TranscoderInstance>;
 }
@@ -27,13 +27,13 @@ export default abstract class Transcoder implements TranscoderInstance {
         this.hls_dir = path.join(Transcoder.OUTPUT_DIR, this.id);
     }
 
-    public get isActive(): boolean {
+    public get is_active(): boolean {
         return this.ffmpeg ? !this.ffmpeg.killed : false;
     }
 
     /** create named folder and spawn process if not yet started */
     public async start(): Promise<Transcoder> {
-        if (this.isActive) return this;
+        if (this.is_active) return this;
 
         await fs.ensureDir(this.hls_dir);
         this.ffmpeg = child_process.spawn(
@@ -58,7 +58,7 @@ export default abstract class Transcoder implements TranscoderInstance {
 
     /** kill process and delete named folder if still active */
     public async stop(): Promise<Transcoder> {
-        if (!this.isActive) return this;
+        if (!this.is_active) return this;
 
         this.ffmpeg.removeAllListeners().kill('SIGKILL');
         await fs.remove(this.hls_dir);

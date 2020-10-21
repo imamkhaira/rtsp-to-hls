@@ -13,21 +13,21 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     }
 
     public async start(): Promise<Streamer> {
-        if (this.isActive) return this;
+        if (this.is_active) return this;
         await super.start();
         this.timeout = setTimeout(() => this.stop(), this.duration);
         return this;
     }
 
     public async stop(): Promise<Streamer> {
-        if (!this.isActive) return this;
+        if (!this.is_active) return this;
         await super.stop();
         return this;
     }
 
     /** reset the timeout of the process only when the process is active */
     public heartbeat(): boolean {
-        if (!this.isActive) return false;
+        if (!this.is_active) return false;
         this.timeout = this.timeout.refresh();
         return true;
     }
@@ -35,6 +35,16 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     /** return the public location of index.m3u8 */
     public get public_index() {
         return path.join(Streamer.PUBLIC_PATH, this.id, Streamer.FILE_NAME);
+    }
+
+    /** get object that contains basic info about the streamer */
+    public get_info() {
+        return {
+            id: this.id,
+            url: this.url,
+            is_active: this.is_active,
+            public_index: this.public_index,
+        };
     }
 
     /* ----------------------------------------------------- */

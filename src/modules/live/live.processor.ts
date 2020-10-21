@@ -34,7 +34,7 @@ export default class LiveProcessor {
         if (this.db.length < 1) return;
 
         const inactive = (this.db.find() as Streamer[]).filter(
-            (stream) => !stream.isActive,
+            (stream) => !stream.is_active,
         );
 
         if (inactive.length < 1) return;

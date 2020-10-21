@@ -1,7 +1,7 @@
-import { STREAM_DURATION } from '@/config';
 import { Router } from 'express';
-import PlaybackServices from './playback.service';
 import HTTP from 'http-status-codes';
+import { STREAM_DURATION } from '@/config';
+import PlaybackServices from './playback.service';
 
 const route = Router();
 const service = new PlaybackServices(STREAM_DURATION);

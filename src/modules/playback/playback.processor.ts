@@ -1,6 +1,5 @@
 import Streamer from '@/entities/streamer';
 import StreamerDB from '@/entities/streamer-db';
-import { Stream } from 'stream';
 
 export default class PlaybackProcessor {
     private readonly db: StreamerDB;
@@ -32,7 +31,7 @@ export default class PlaybackProcessor {
     private sweepInactive() {
         if (this.db.length < 1) return;
         const inactive = (this.db.find() as Streamer[]).filter(
-            (replay) => !replay.isActive,
+            (replay) => !replay.is_active,
         );
 
         if (inactive.length < 1) return;

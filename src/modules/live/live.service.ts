@@ -1,4 +1,3 @@
-import { streamer_to_response_data } from '@/shared/functions';
 import Response from '@/entities/response';
 import LiveProcessor from './live.processor';
 
@@ -13,7 +12,8 @@ export default class LiveServices {
     public async start(request: string[]) {
         try {
             const streams = await this.processor.createLiveStreams(request);
-            return new Response(streams);
+            const data = streams.map((stream) => stream.get_info());
+            return new Response(data);
         } catch (e) {
             return new Response(
                 request,
@@ -28,7 +28,8 @@ export default class LiveServices {
     public async stop(request: string[]) {
         try {
             const streams = await this.processor.destroyLiveStreams(request);
-            return new Response(streams);
+            const data = streams.map((stream) => stream.get_info());
+            return new Response(data);
         } catch (e) {
             return new Response(
                 request,
@@ -43,7 +44,8 @@ export default class LiveServices {
     public beat(request: string[]) {
         try {
             const streams = this.processor.beatLiveStreams(request);
-            return new Response(streams);
+            const data = streams.map((stream) => stream.get_info());
+            return new Response(data);
         } catch (e) {
             return new Response(
                 request,

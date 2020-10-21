@@ -1,6 +1,5 @@
 import Response from '@/entities/response';
 import PlaybackProcessor from './playback.processor';
-import { streamer_to_response_data } from '@/shared/functions';
 
 export default class PlaybackServices {
     private processor: PlaybackProcessor;
@@ -13,7 +12,7 @@ export default class PlaybackServices {
     public async start(request: string) {
         try {
             const stream = await this.processor.createPlayback(request);
-            return new Response(stream);
+            return new Response(stream.get_info());
         } catch (e) {
             return new Response(
                 request,
@@ -28,7 +27,7 @@ export default class PlaybackServices {
     public async stop(request: string) {
         try {
             const stream = await this.processor.destroyPlayback(request);
-            return new Response(stream);
+            return new Response(stream.get_info());
         } catch (e) {
             return new Response(
                 request,
@@ -43,7 +42,7 @@ export default class PlaybackServices {
     public beat(request: string) {
         try {
             const stream = this.processor.beatPlayback(request);
-            return new Response(stream);
+            return new Response(stream.get_info());
         } catch (e) {
             return new Response(
                 request,
