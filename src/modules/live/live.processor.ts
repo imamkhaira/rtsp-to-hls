@@ -1,6 +1,5 @@
 import Streamer from '@/entities/streamer';
 import StreamerDB from '@/entities/streamer-db';
-import { PerformanceObserver } from 'perf_hooks';
 
 export default class LiveProcessor {
     private db: StreamerDB;

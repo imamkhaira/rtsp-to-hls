@@ -28,7 +28,10 @@ if (process.env.NODE_ENV === 'development') server.use(morgan('dev'));
 if (process.env.NODE_ENV === 'production') server.use(helmet());
 
 // Add APIs
-server.use(STREAM_PUBLIC_PATH, StreamDirectory(STREAM_DIRECTORY));
+server.use(
+    STREAM_PUBLIC_PATH,
+    StreamDirectory(STREAM_DIRECTORY, STREAM_PUBLIC_PATH),
+);
 server.use('/api', BaseRouter);
 
 // Export express instance

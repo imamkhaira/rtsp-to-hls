@@ -1,27 +1,56 @@
+import { streamer_to_response_data } from '@/shared/functions';
 import Response from '@/entities/response';
-import Streamer from '@/entities/streamer';
-import { stream } from 'winston';
 import LiveProcessor from './live.processor';
 
-export interface CreateLivestream {
-    id: string;
-    url: string;
-    duration: number;
-    public_index: string;
-}
-
-const createResponseFromStreamer = (streamer: Streamer) => ({
-    id: streamer.id,
-    url: streamer.url,
-    duration: streamer.duration,
-    public_index: streamer.public_index,
-    heartbeat_url: `api/livestream/`,
-});
-
 export default class LiveServices {
-    private processor = new LiveProcessor(60000);
+    private processor: LiveProcessor;
 
-    public async startLive(request: string[]) {
-        this.processor.createLiveStreams(request);
+    constructor(default_duration: number) {
+        this.processor = new LiveProcessor(default_duration);
+    }
+
+    /** @param request array of urls to be live-streamed */
+    public async start(request: string[]) {
+        try {
+            const streams = await this.processor.createLiveStreams(request);
+            return new Response(streams);
+        } catch (e) {
+            return new Response(
+                request,
+                true,
+                'Error while starting livestream',
+                e.message,
+            );
+        }
+    }
+
+    /** @param request array of livestream ids to be stopped */
+    public async stop(request: string[]) {
+        try {
+            const streams = await this.processor.destroyLiveStreams(request);
+            return new Response(streams);
+        } catch (e) {
+            return new Response(
+                request,
+                true,
+                'Error while stopping livestream',
+                e.message,
+            );
+        }
+    }
+
+    /** @param request array of livestream ids to be heartbeated */
+    public beat(request: string[]) {
+        try {
+            const streams = this.processor.beatLiveStreams(request);
+            return new Response(streams);
+        } catch (e) {
+            return new Response(
+                request,
+                true,
+                'Error while stopping livestream',
+                e.message,
+            );
+        }
     }
 }
