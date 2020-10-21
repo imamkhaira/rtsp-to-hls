@@ -2,7 +2,8 @@
 url=rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream
 url=rtsp://192.168.100.150:554/ch09.264
 loglevel=fatal
-ffmpeg -fflags nobuffer -rtsp_transport tcp -i $url -timeout 5 -c:v copy -preset veryfast -c:a copy \
+ffmpeg -fflags nobuffer -rtsp_transport tcp -i $url \
+-timeout 5 -c:v copy -preset veryfast -c:a copy \
 -ac 1 -f hls -hls_flags delete_segments+append_list index.m3u8
 */
 
@@ -10,6 +11,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import short_uuid from 'short-uuid';
 import child_process from 'child_process';
+import logger from '@/shared/Logger';
 
 export interface TranscoderInstance {
     readonly id: string;
@@ -76,7 +78,7 @@ export default abstract class Transcoder implements TranscoderInstance {
         return new Promise((resolve) => {
             const watcher = fs.watch(this.hls_dir, (event, file) => {
                 if (file === Transcoder.FILE_NAME) {
-                    console.log(`doing -${event}- to file -${file}-`);
+                    logger.info(`doing -${event}- to file -${file}-`);
                     watcher.removeAllListeners();
                     watcher.close();
                     return resolve(this);

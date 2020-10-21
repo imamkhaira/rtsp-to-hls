@@ -1,11 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import ReturnResponse from '@/entities/response';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { NextFunction, Request, Response } from 'express';
+import HTTP from 'http-status-codes';
+import createResponse from '@/entities/response';
 import logger from '@/shared/Logger';
 
-export default (err: Error, req: Request, res: Response) => {
-    logger.err(err.message);
+/** send API errors to client in a fashionable way */
+export default (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    logger.err(err, true);
     return res
-        .status(StatusCodes.BAD_REQUEST)
-        .end(new ReturnResponse(err, true, err.message).json);
+        .status(HTTP.BAD_REQUEST)
+        .end(createResponse(null, true, err.name, err.message));
 };

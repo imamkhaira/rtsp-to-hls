@@ -1,4 +1,4 @@
-import Response from '@/entities/response';
+import createResponse from '@/entities/response';
 import PlaybackProcessor from './playback.processor';
 
 export default class PlaybackServices {
@@ -9,12 +9,12 @@ export default class PlaybackServices {
     }
 
     /** @param request array of urls to be live-streamed */
-    public async start(request: string) {
+    public async start(request: string): Promise<string> {
         try {
             const stream = await this.processor.createPlayback(request);
-            return new Response(stream.get_info());
+            return createResponse(stream.get_info());
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while starting playback',
@@ -24,12 +24,12 @@ export default class PlaybackServices {
     }
 
     /** @param request array of livestream ids to be stopped */
-    public async stop(request: string) {
+    public async stop(request: string): Promise<string> {
         try {
             const stream = await this.processor.destroyPlayback(request);
-            return new Response(stream.get_info());
+            return createResponse(stream.get_info());
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while stopping playback',
@@ -39,12 +39,12 @@ export default class PlaybackServices {
     }
 
     /** @param request array of livestream ids to be heartbeated */
-    public beat(request: string) {
+    public beat(request: string): string {
         try {
             const stream = this.processor.beatPlayback(request);
-            return new Response(stream.get_info());
+            return createResponse(stream.get_info());
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while stopping playback',

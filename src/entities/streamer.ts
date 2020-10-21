@@ -15,7 +15,7 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     public async start(): Promise<Streamer> {
         if (this.is_active) return this;
         await super.start();
-        this.timeout = setTimeout(() => this.stop(), this.duration);
+        this.timeout = setTimeout(() => void this.stop(), this.duration);
         return this;
     }
 

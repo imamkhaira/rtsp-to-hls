@@ -1,3 +1,4 @@
+export * as StatusCodes from 'http-status-codes';
 export interface ResponseInterface {
     error: boolean;
     message: string;
@@ -6,15 +7,15 @@ export interface ResponseInterface {
 }
 
 /** create a new Response object */
-export default class Response implements ResponseInterface {
-    constructor(
-        public data: any,
-        public error = false,
-        public message = 'OK',
-        public more_info = '',
-    ) {}
-
-    public get json() {
-        return JSON.stringify(this);
-    }
-}
+export default (
+    data: any,
+    error = false,
+    status_message = 'OK',
+    more_info = '',
+) =>
+    JSON.stringify({
+        data,
+        error,
+        status_message,
+        more_info,
+    });

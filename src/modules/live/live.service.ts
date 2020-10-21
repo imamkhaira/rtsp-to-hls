@@ -1,4 +1,4 @@
-import Response from '@/entities/response';
+import createResponse from '@/entities/response';
 import LiveProcessor from './live.processor';
 
 export default class LiveServices {
@@ -9,49 +9,48 @@ export default class LiveServices {
     }
 
     /** @param request array of urls to be live-streamed */
-    public async start(request: string[]) {
+    public async start(request: string[]): Promise<string> {
         try {
             const streams = await this.processor.createLiveStreams(request);
             const data = streams.map((stream) => stream.get_info());
-            return new Response(data);
+            return createResponse(data);
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while starting livestream',
-                e.message,
             );
         }
     }
 
     /** @param request array of livestream ids to be stopped */
-    public async stop(request: string[]) {
+    public async stop(request: string[]): Promise<string> {
         try {
             const streams = await this.processor.destroyLiveStreams(request);
             const data = streams.map((stream) => stream.get_info());
-            return new Response(data);
+            return createResponse(data);
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while stopping livestream',
-                e.message,
+                e.message as string,
             );
         }
     }
 
     /** @param request array of livestream ids to be heartbeated */
-    public beat(request: string[]) {
+    public beat(request: string[]): string {
         try {
             const streams = this.processor.beatLiveStreams(request);
             const data = streams.map((stream) => stream.get_info());
-            return new Response(data);
+            return createResponse(data);
         } catch (e) {
-            return new Response(
+            return createResponse(
                 request,
                 true,
                 'Error while stopping livestream',
-                e.message,
+                e.message as string,
             );
         }
     }

@@ -1,59 +1,37 @@
-import cookieParser from 'cookie-parser';
+import express from 'express';
 import morgan from 'morgan';
-import path from 'path';
 import helmet from 'helmet';
-
-import express, { NextFunction, Request, Response } from 'express';
-import StatusCodes from 'http-status-codes';
+import cookieParser from 'cookie-parser';
 import 'express-async-errors';
 
-import BaseRouter from './modules';
-import logger from '@/shared/Logger';
+import BaseRouter from '@/modules';
+import ServeHLS from '@/middlewares/serve-hls';
+import JSONResponse from '@/middlewares/json-response';
+import StructuredError from '@/middlewares/structured-error';
+import { STREAM_DIRECTORY, STREAM_PUBLIC_PATH } from '@/config';
 
 const app = express();
-const { BAD_REQUEST } = StatusCodes;
 
-/************************************************************************************
- *                              Set basic express settings
- ***********************************************************************************/
+/* ----------------------------------------------------- */
+/* -------------- Load Express Middleware -------------- */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Show routes called in console during development
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-}
+/* ---------------------------------------------------- */
+/* -- Log data in development, harden in production -- */
 
-// Security
-if (process.env.NODE_ENV === 'production') {
-    app.use(helmet());
-}
+if (process.env.NODE_ENV === 'production') app.use(helmet());
+else app.use(morgan('dev'));
 
-// Add APIs
+/* ---------------------------------------------------- */
+/* -------- Load Endpoints & custom middelware -------- */
+
+app.use(JSONResponse);
+app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, STREAM_PUBLIC_PATH));
 app.use('/api', BaseRouter);
-
-// Print API errors
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    logger.err(err, true);
-    return res.status(BAD_REQUEST).json({
-        error: err.message,
-    });
-});
-
-/************************************************************************************
- *                              Serve front-end content
- ***********************************************************************************/
-
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
-const staticDir = path.join(__dirname, 'public');
-app.use(express.static(staticDir));
-app.get('*', (req: Request, res: Response) => {
-    res.sendFile('index.html', { root: viewsDir });
-});
+app.use(StructuredError);
 
 // Export express instance
 export default app;
