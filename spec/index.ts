@@ -1,26 +1,61 @@
+import find from 'find';
 import Jasmine from 'jasmine';
-import logger from '@/shared/Logger';
+import dotenv from 'dotenv';
+import commandLineArgs from 'command-line-args';
+import logger from '@shared/Logger';
 
-// Init yasmin :)
-const yasmin = new Jasmine(null /* awoakwoka */);
+
+// Setup command line options
+const options = commandLineArgs([
+    {
+        name: 'testFile',
+        alias: 'f',
+        type: String,
+    },
+]);
+
+// Set the env file
+const result2 = dotenv.config({
+    path: `./env/test.env`,
+});
+if (result2.error) {
+    throw result2.error;
+}
+
+
+// Init Jasmine
+const jasmine = new Jasmine(null);
 
 // Set location of test files
-yasmin.loadConfig({
+jasmine.loadConfig({
+    random: true,
     spec_dir: 'spec',
-    spec_files: ['**/*spec.ts'],
-    helpers: ['helpers/**/*.ts'],
-    stopSpecOnExpectationFailure: true,
-    verbose: true,
-    random: false,
+    spec_files: [
+        './tests/**/*.spec.ts',
+    ],
+    stopSpecOnExpectationFailure: false,
 });
 
 // On complete callback function
-yasmin.onComplete((passed: boolean) => {
+jasmine.onComplete((passed: boolean) => {
     if (passed) {
         logger.info('All tests have passed :)');
     } else {
-        logger.error('At least one test has failed :(');
+        logger.err('At least one test has failed :(');
     }
 });
 
-yasmin.execute();
+// Run all or a single unit-test
+if (options.testFile) {
+    const testFile = options.testFile as string;
+    find.file(testFile + '.spec.ts', './spec', (files) => {
+        if (files.length === 1) {
+            jasmine.specFiles = [files[0]];
+            jasmine.execute();
+        } else {
+            logger.err('Test file not found!');
+        }
+    });
+} else {
+    jasmine.execute();
+}
