@@ -12,7 +12,7 @@ export default class PlaybackServices {
     public async start(request: string): Promise<string> {
         try {
             const stream = await this.processor.createPlayback(request);
-            return createResponse(stream.get_info());
+            return createResponse(stream.info);
         } catch (e) {
             return createResponse(
                 request,
@@ -27,7 +27,7 @@ export default class PlaybackServices {
     public async stop(request: string): Promise<string> {
         try {
             const stream = await this.processor.destroyPlayback(request);
-            return createResponse(stream.get_info());
+            return createResponse(stream.info);
         } catch (e) {
             return createResponse(
                 request,
@@ -42,7 +42,7 @@ export default class PlaybackServices {
     public beat(request: string): string {
         try {
             const stream = this.processor.beatPlayback(request);
-            return createResponse(stream.get_info());
+            return createResponse(stream.info);
         } catch (e) {
             return createResponse(
                 request,

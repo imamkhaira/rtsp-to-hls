@@ -38,10 +38,11 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     }
 
     /** get object that contains basic info about the streamer */
-    public get_info() {
+    public get info() {
         return {
             id: this.id,
             url: this.url,
+            duration: this.duration,
             is_active: this.is_active,
             public_index: this.public_index,
         };

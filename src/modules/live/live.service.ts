@@ -12,7 +12,7 @@ export default class LiveServices {
     public async start(request: string[]): Promise<string> {
         try {
             const streams = await this.processor.createLiveStreams(request);
-            const data = streams.map((stream) => stream.get_info());
+            const data = streams.map((stream) => stream.info);
             return createResponse(data);
         } catch (e) {
             return createResponse(
@@ -27,7 +27,7 @@ export default class LiveServices {
     public async stop(request: string[]): Promise<string> {
         try {
             const streams = await this.processor.destroyLiveStreams(request);
-            const data = streams.map((stream) => stream.get_info());
+            const data = streams.map((stream) => stream.info);
             return createResponse(data);
         } catch (e) {
             return createResponse(
@@ -43,7 +43,7 @@ export default class LiveServices {
     public beat(request: string[]): string {
         try {
             const streams = this.processor.beatLiveStreams(request);
-            const data = streams.map((stream) => stream.get_info());
+            const data = streams.map((stream) => stream.info);
             return createResponse(data);
         } catch (e) {
             return createResponse(
@@ -53,5 +53,10 @@ export default class LiveServices {
                 e.message as string,
             );
         }
+    }
+
+    public getRunning(): string {
+        const all = this.processor.getRunningLiveStreams().map(stream => stream.info)
+        return createResponse(all)
     }
 }

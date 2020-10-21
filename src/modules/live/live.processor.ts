@@ -30,6 +30,10 @@ export default class LiveProcessor {
         return found;
     }
 
+    public getRunningLiveStreams(): Streamer[] {
+        return this.db.find() as Streamer[];
+    }
+
     private sweepInactive() {
         if (this.db.length < 1) return;
 
