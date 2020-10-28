@@ -28,7 +28,7 @@ else app.use(morgan('dev'));
 /* ---------------------------------------------------- */
 /* -------- Load Endpoints & custom middelware -------- */
 
-app.use(JSONResponse);
+app.use('/api', JSONResponse);
 app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, STREAM_PUBLIC_PATH));
 app.use('/api', BaseRouter);
 app.use(StructuredError);
