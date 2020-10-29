@@ -8,7 +8,11 @@ import BaseRouter from '@/modules';
 import ServeHLS from '@/middlewares/serve-hls';
 import JSONResponse from '@/middlewares/json-response';
 import StructuredError from '@/middlewares/structured-error';
-import { STREAM_DIRECTORY, STREAM_PUBLIC_PATH } from '@/config';
+import {
+    STREAM_DIRECTORY,
+    STREAM_PUBLIC_PATH,
+    SERVER_ADDRESS,
+} from '@/shared/config';
 
 const app = express();
 
@@ -28,8 +32,10 @@ else app.use(morgan('dev'));
 /* ---------------------------------------------------- */
 /* -------- Load Endpoints & custom middelware -------- */
 
+const full_path = SERVER_ADDRESS + STREAM_PUBLIC_PATH;
+
 app.use('/api', JSONResponse);
-app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, STREAM_PUBLIC_PATH));
+app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, full_path));
 app.use('/api', BaseRouter);
 app.use(StructuredError);
 
