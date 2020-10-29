@@ -1,15 +1,23 @@
 export * as StatusCodes from 'http-status-codes';
 
 /** create a new Response object */
-export default (
-    data: any,
-    error = false,
-    status_message = 'OK',
-    more_info = '',
-) =>
-    JSON.stringify({
-        data,
-        error,
-        status_message,
-        more_info,
-    });
+class Response {
+    constructor(
+        readonly payload: any,
+        readonly error: boolean,
+        readonly message: string,
+    ) {}
+
+    public to_json() {
+        return JSON.stringify({
+            payload: this.payload,
+            error: this.error,
+            message: this.message,
+        });
+    }
+}
+
+const create_response = (payload: any, error = false, message = '') =>
+    new Response(payload, error, message);
+
+export default create_response;

@@ -3,8 +3,7 @@ import Transcoder from './transcoder';
 
 export interface StreamerInstance {
     readonly duration: number;
-    readonly public_index: string;
-    heartbeat(): boolean;
+    heartbeat(): StreamerInstance;
 }
 
 export default class Streamer extends Transcoder implements StreamerInstance {
@@ -26,15 +25,10 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     }
 
     /** reset the timeout of the process only when the process is active */
-    public heartbeat(): boolean {
-        if (!this.is_active) return false;
+    public heartbeat(): Streamer {
+        if (!this.is_active) return this;
         this.timeout = this.timeout.refresh();
-        return true;
-    }
-
-    /** return the public location of index.m3u8 */
-    public get public_index() {
-        return path.join(Streamer.PUBLIC_PATH, this.id, Streamer.FILE_NAME);
+        return this;
     }
 
     /** get object that contains basic info about the streamer */
@@ -44,7 +38,9 @@ export default class Streamer extends Transcoder implements StreamerInstance {
             url: this.url,
             duration: this.duration,
             is_active: this.is_active,
-            public_index: this.public_index,
+            public_index:
+                Streamer.PUBLIC_PATH +
+                path.join('/', this.id, Streamer.FILE_NAME),
         };
     }
 
@@ -56,5 +52,5 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     /* ----------------------------------------------------- */
     /* ---------------------- Statics ---------------------- */
 
-    public static PUBLIC_PATH = './public';
+    public static PUBLIC_PATH = 'localhost:3000/hls';
 }

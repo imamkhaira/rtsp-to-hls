@@ -5,6 +5,11 @@ loglevel=fatal
 ffmpeg -fflags nobuffer -rtsp_transport tcp -i $url \
 -timeout 5 -c:v copy -preset veryfast -c:a copy \
 -ac 1 -f hls -hls_flags delete_segments+append_list index.m3u8
+
+ffmpeg -rtsp_transport tcp -i $url  \
+    -c:v libx264 -crf 21 -preset ultrafast -g 25 -sc_threshold 0 \
+    -c:a aac -b:a 128k -ac 1 \
+    -f hls -hls_time 1 -hls_flags delete_segments index.m3u8
 */
 
 import path from 'path';
@@ -39,19 +44,23 @@ export default abstract class Transcoder implements TranscoderInstance {
 
         await fs.ensureDir(this.hls_dir);
         this.ffmpeg = child_process.spawn(
-            'ffmpeg',
+            `ffmpeg`,
             [
-                `-loglevel error`,
-                `-fflags nobuffer`,
                 `-rtsp_transport tcp`,
                 `-i ${this.url}`,
-                `-c:v copy -preset veryfast`,
-                `-c:a copy -ac 1`,
+                `-c:v libx264`,
+                `-crf 21`,
+                `-preset ultrafast`,
+                `-g 25`,
+                `-sc_threshold 0`,
+                `-c:a aac`,
+                `-b:a 128k`,
+                `-ac 1`,
                 `-f hls`,
-                `-hls_flags delete_segments+append_list`,
+                `-hls_time 1`,
+                `-hls_flags delete_segments`,
                 Transcoder.FILE_NAME,
             ],
-
             { cwd: this.hls_dir, detached: false, shell: true },
         );
 

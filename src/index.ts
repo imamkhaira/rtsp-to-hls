@@ -3,7 +3,7 @@ import {
     STREAM_DIRECTORY,
     STREAM_DURATION,
     STREAM_PUBLIC_PATH,
-} from '@/config';
+} from '@/shared/config';
 import app from '@/server';
 import logger from '@/shared/Logger';
 

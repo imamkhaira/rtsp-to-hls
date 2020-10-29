@@ -5,14 +5,17 @@ import createResponse from '@/entities/response';
 import logger from '@/shared/Logger';
 
 /** send API errors to client in a fashionable way */
-export default (
+const StructuredError = (
     err: Error,
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
-    logger.err(err, true);
-    return res
-        .status(HTTP.BAD_REQUEST)
-        .end(createResponse(null, true, err.name, err.message));
+    if (!err) next();
+    logger.err(err.message, true);
+    res.status(HTTP.BAD_GATEWAY).end(
+        createResponse(null, true, err.message).to_json(),
+    );
 };
+
+export default StructuredError;
