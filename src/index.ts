@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import {
     API_PORT,
     STREAM_DIRECTORY,
