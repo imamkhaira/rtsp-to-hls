@@ -9,51 +9,36 @@ export default class PlaybackServices {
     }
 
     /** @param request array of urls to be live-streamed */
-    public async start(request: string): Promise<string> {
+    public async start(request: string) {
         try {
             const stream = await this.processor.createPlayback(request);
-            return createResponse(stream.info);
+            return createResponse(stream);
         } catch (e) {
-            return createResponse(
-                request,
-                true,
-                'Error while starting playback',
-                e.message,
-            );
+            throw new Error('Error while starting playback');
         }
     }
 
     /** @param request array of livestream ids to be stopped */
-    public async stop(request: string): Promise<string> {
+    public async stop(request: string) {
         try {
             const stream = await this.processor.destroyPlayback(request);
-            return createResponse(stream.info);
+            return createResponse(stream);
         } catch (e) {
-            return createResponse(
-                request,
-                true,
-                'Error while stopping playback',
-                e.message,
-            );
+            throw new Error('Error while starting playback');
         }
     }
 
     /** @param request array of livestream ids to be heartbeated */
-    public beat(request: string): string {
+    public beat(request: string) {
         try {
             const stream = this.processor.beatPlayback(request);
-            return createResponse(stream.info);
+            return createResponse(stream);
         } catch (e) {
-            return createResponse(
-                request,
-                true,
-                'Error while stopping playback',
-                e.message,
-            );
+            throw new Error('Error while starting playback');
         }
     }
 
-    public getRunning(): string {
+    public getRunning() {
         const all = this.processor
             .getRunningPlaybacks()
             .map((stream) => stream.info);

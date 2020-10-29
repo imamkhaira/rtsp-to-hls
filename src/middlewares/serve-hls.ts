@@ -8,7 +8,7 @@ import Streamer from '@/entities/streamer';
  * @param dir physical location of transcoder output
  * @param public_path virtual path where express should serve the files
  */
-export default (dir: string, public_path: string) => {
+const ServeHLS = (dir: string, public_path: string) => {
     try {
         Streamer.OUTPUT_DIRECTORY = dir;
         Streamer.PUBLIC_PATH = public_path;
@@ -22,3 +22,5 @@ export default (dir: string, public_path: string) => {
         );
     }
 };
+
+export default ServeHLS;

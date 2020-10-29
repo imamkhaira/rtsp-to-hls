@@ -8,6 +8,7 @@ import BaseRouter from '@/modules';
 import ServeHLS from '@/middlewares/serve-hls';
 import JSONResponse from '@/middlewares/json-response';
 import StructuredError from '@/middlewares/structured-error';
+
 import {
     STREAM_DIRECTORY,
     STREAM_PUBLIC_PATH,
@@ -33,10 +34,8 @@ else app.use(morgan('dev'));
 /* -------- Load Endpoints & custom middelware -------- */
 
 const full_path = SERVER_ADDRESS + STREAM_PUBLIC_PATH;
-
-app.use('/api', JSONResponse);
 app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, full_path));
-app.use('/api', BaseRouter);
+app.use('/api', JSONResponse, BaseRouter);
 app.use(StructuredError);
 
 // Export express instance

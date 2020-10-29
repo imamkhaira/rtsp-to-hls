@@ -38,11 +38,9 @@ export default class Streamer extends Transcoder implements StreamerInstance {
             url: this.url,
             duration: this.duration,
             is_active: this.is_active,
-            public_index: path.join(
-                Streamer.PUBLIC_PATH,
-                this.id,
-                Streamer.FILE_NAME,
-            ),
+            public_index:
+                Streamer.PUBLIC_PATH +
+                path.join('/', this.id, Streamer.FILE_NAME),
         };
     }
 
@@ -54,5 +52,5 @@ export default class Streamer extends Transcoder implements StreamerInstance {
     /* ----------------------------------------------------- */
     /* ---------------------- Statics ---------------------- */
 
-    public static PUBLIC_PATH = './public';
+    public static PUBLIC_PATH = 'localhost:3000/hls';
 }

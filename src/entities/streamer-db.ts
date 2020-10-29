@@ -18,12 +18,12 @@ export default class StreamerDB implements StreamerDBInstance {
      * finds items by their IDs, accepts array of string ids and
      * return array of matching instances
      */
-    public find(ids = (null as unknown) as string[]): InstanceWithID[] {
-        if (ids === null) return this.storage;
+    public find(keywords = (null as unknown) as string[]): InstanceWithID[] {
+        if (keywords === null) return this.storage;
 
         const toReturn = [] as InstanceWithID[];
-        ids.forEach((id) => {
-            const index = this.storage.findIndex((item) => item.id === id);
+        keywords.forEach((keyword) => {
+            const index = this.storage.findIndex((item) => item.id === keyword);
             if (index > -1) toReturn.push(this.storage[index]);
         });
 
