@@ -9,8 +9,6 @@ try {
     // Remove current build
     fs.removeSync('./dist/');
     // Copy front-end files
-    fs.copySync('./ecosystem.config.js', './dist/ecosystem.config.js');
-    // fs.copySync('./src/public', './dist/public');
     // fs.copySync('./src/views', './dist/views');
 } catch (err) {
     Logger.Err(err);

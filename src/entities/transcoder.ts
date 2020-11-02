@@ -29,8 +29,12 @@ export interface TranscoderInstance {
 export default abstract class Transcoder implements TranscoderInstance {
     public readonly id: string;
 
+    private readonly hls_dir: string;
+
+    private ffmpeg!: child_process.ChildProcess;
+
     constructor(public readonly url: string) {
-        this.id = short_uuid('tilakocheng').generate();
+        this.id = short_uuid().generate();
         this.hls_dir = path.join(Transcoder.OUTPUT_DIR, this.id);
     }
 
@@ -48,12 +52,12 @@ export default abstract class Transcoder implements TranscoderInstance {
             [
                 `-rtsp_transport tcp`,
                 `-i ${this.url}`,
-                `-c:v libx264`,
+                `-c:v copy`,
                 `-crf 21`,
                 `-preset ultrafast`,
                 `-g 25`,
                 `-sc_threshold 0`,
-                `-c:a aac`,
+                `-c:a copy`,
                 `-b:a 128k`,
                 `-ac 1`,
                 `-f hls`,
@@ -78,10 +82,6 @@ export default abstract class Transcoder implements TranscoderInstance {
 
     /* ----------------------------------------------------- */
     /* ---------------------- Privats ---------------------- */
-
-    private readonly hls_dir: string;
-
-    private ffmpeg!: child_process.ChildProcess;
 
     private created_m3u8(): Promise<Transcoder> {
         return new Promise((resolve) => {

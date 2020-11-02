@@ -7,6 +7,8 @@ export interface StreamerInstance {
 }
 
 export default class Streamer extends Transcoder implements StreamerInstance {
+    private timeout!: NodeJS.Timeout;
+
     constructor(public readonly url: string, public readonly duration: number) {
         super(url);
     }
@@ -46,8 +48,6 @@ export default class Streamer extends Transcoder implements StreamerInstance {
 
     /* ----------------------------------------------------- */
     /* ---------------------- Privats ---------------------- */
-
-    private timeout!: NodeJS.Timeout;
 
     /* ----------------------------------------------------- */
     /* ---------------------- Statics ---------------------- */
