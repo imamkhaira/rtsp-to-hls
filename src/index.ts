@@ -1,18 +1,19 @@
-import 'module-alias/register';
-import {
-    API_PORT,
-    STREAM_DIRECTORY,
-    STREAM_DURATION,
-    STREAM_PUBLIC_PATH,
-} from '@/shared/config';
-import app from '@/server';
-import logger from '@/shared/Logger';
+import express from 'express';
+import { WORK_DIRECTORY, OUTPUT_URL, PORT, STREAM_KEEPALIVE } from './shared/config';
+import { StaticModule } from './modules/static/static.module';
+import { TranscoderModule } from './modules/transcoder/transcoder.module';
+const App = express();
 
-// Setup command line options
+const [transcoder, refresher] = TranscoderModule({
+    workDir: WORK_DIRECTORY,
+    outputUrl: OUTPUT_URL,
+    keepalive: STREAM_KEEPALIVE
+});
 
-// Start the server
+App.use('/transcode', transcoder);
+App.use(OUTPUT_URL, refresher);
+App.use(OUTPUT_URL, StaticModule(WORK_DIRECTORY));
 
-console.log(STREAM_DIRECTORY, STREAM_PUBLIC_PATH, STREAM_DURATION);
-app.listen(API_PORT, () => {
-    logger.info('Transcoder server started on port: ' + API_PORT);
+App.listen(PORT, () => {
+    console.log(`server is listening on port ${PORT}`);
 });

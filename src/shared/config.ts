@@ -1,19 +1,20 @@
 import dotenv from 'dotenv';
-const environment = process.env.NODE_ENV || 'development';
 
-// Set the env file
-const result2 = dotenv.config({
-    path: `./.env/${environment}.env`,
-});
+dotenv.config();
 
-if (result2.error) throw result2.error;
+/** asbolute path where to put index.m3u8 and video segment files */
+export const WORK_DIRECTORY = String(process.env.WORK_DIRECTORY);
 
-export const SERVER_ADDRESS =
-    process.env.SERVER_ADDRESS || 'http://192.168.100.198:3000';
-export const API_PORT = Number(process.env.API_PORT || 3000);
-export const API_PUBLIC_PATH = Number(process.env.API_PUBLIC_PATH || 3000);
-export const STREAM_DIRECTORY =
-    String(process.env.STREAM_DIRECTORY) || '/dev/shm';
-export const STREAM_PUBLIC_PATH =
-    String(process.env.STREAM_PUBLIC_PATH) || '/public';
-export const STREAM_DURATION = Number(process.env.STREAM_DURATION || 300000);
+/** the url path where the streams will be placed. */
+export const OUTPUT_URL = String(process.env.OUTPUT_URL);
+
+/** port to listen to */
+export const PORT = Number(process.env.PORT);
+
+/** maximum time in ms to wait until stream is created */
+export const WAIT_TIMEOUT = Number(process.env.WAIT_TIMEOUT);
+
+/** maximum time in ms to keep the stream alive. */
+export const STREAM_KEEPALIVE = Number(process.env.STREAM_KEEPALIVE);
+
+export const RUNAS_UID = Number(process.env.RUNAS_UID);
