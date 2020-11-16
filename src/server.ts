@@ -1,42 +1,34 @@
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import cookieParser from 'cookie-parser';
 import 'express-async-errors';
+import cookieParser from 'cookie-parser';
 
-import BaseRouter from '@/modules';
-import ServeHLS from '@/middlewares/serve-hls';
-import JSONResponse from '@/middlewares/json-response';
-import StructuredError from '@/middlewares/structured-error';
-
-import {
-    STREAM_DIRECTORY,
-    STREAM_PUBLIC_PATH,
-    SERVER_ADDRESS,
-} from '@/shared/config';
+import BaseRouter from './routes';
+import json_response from './middleware/json-response';
+import structure_errors from './middleware/structured-error';
 
 const app = express();
 
-/* ----------------------------------------------------- */
-/* -------------- Load Express Middleware -------------- */
+/************************************************************************************
+ *                              Set basic express settings
+ ***********************************************************************************/
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(json_response);
 
-/* ---------------------------------------------------- */
-/* -- Log data in development, harden in production -- */
+// Show routes called in console during development
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+// Security
+else app.use(helmet());
 
-if (process.env.NODE_ENV === 'production') app.use(helmet());
-else app.use(morgan('dev'));
+// Add APIs
+app.use('/api', BaseRouter);
 
-/* ---------------------------------------------------- */
-/* -------- Load Endpoints & custom middelware -------- */
-
-const full_path = SERVER_ADDRESS + STREAM_PUBLIC_PATH;
-app.use(STREAM_PUBLIC_PATH, ServeHLS(STREAM_DIRECTORY, full_path));
-app.use('/api', JSONResponse, BaseRouter);
-app.use(StructuredError);
+// catch errors
+app.use(structure_errors);
 
 // Export express instance
 export default app;

@@ -1,6 +1,0 @@
-[2020-11-02T05:17:02.652Z] INFO: 
-    listen port: 3000
-    output dir: /dev/shm/transcoder
-    hls public path: /hls
-    stream duration: 60000
-    
