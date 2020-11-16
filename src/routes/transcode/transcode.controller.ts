@@ -1,8 +1,11 @@
-import validate_rtsp from '@/middleware/validate-rtsp';
-import config from '@/shared/config';
 import express from 'express';
+import fs from 'fs-extra';
+import config from '@/shared/config';
+import validate_rtsp from '@/middleware/validate-rtsp';
 
 import TranscoderService from './transcode.service';
+
+fs.emptyDirSync(config.hls_root_dir);
 
 const transcode = express.Router();
 

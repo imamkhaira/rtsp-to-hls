@@ -1,0 +1,20 @@
+[2020-11-16T08:43:58.633Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T08:43:58.633Z] INFO: Express server started on port: 3000
+[2020-11-16T08:58:40.975Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T08:58:40.975Z] INFO: Express server started on port: 3000
+[2020-11-16T08:59:04.972Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T08:59:04.972Z] INFO: Express server started on port: 3000
+[2020-11-16T08:59:23.978Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T08:59:23.979Z] INFO: Express server started on port: 3000
+[2020-11-16T09:09:14.059Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T09:09:14.059Z] INFO: Express server started on port: 3000
+[2020-11-16T09:09:27.837Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T09:09:27.837Z] INFO: Express server started on port: 3000
+[2020-11-16T09:17:22.762Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T09:17:22.762Z] INFO: Express server started on port: 3000
+[2020-11-16T09:18:07.839Z] INFO: loaded )} config: {"api_port":3000,"api_address":"'http://192.168.100.120:3000',","api_root_url":"'/api',","hls_root_dir":"'/dev/shm/transcoder',","hls_duration":20000}
+[2020-11-16T09:18:07.839Z] INFO: Express server started on port: 3000
+[2020-11-16T09:19:44.679Z] INFO: loaded )} config: {"api_port":3000,"api_address":"http://192.168.100.120:3000,","api_root_url":"/api,","hls_root_dir":"/dev/shm/transcoder,","hls_duration":20000}
+[2020-11-16T09:19:44.679Z] INFO: Express server started on port: 3000
+[2020-11-16T09:23:25.078Z] INFO: loaded )} config: {"api_port":3000,"api_address":"http://192.168.100.120:3000","api_root_url":"/api","hls_root_dir":"/dev/shm/transcoder","hls_duration":20000}
+[2020-11-16T09:23:25.078Z] INFO: Express server started on port: 3000

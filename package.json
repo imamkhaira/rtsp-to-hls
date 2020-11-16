@@ -3,11 +3,13 @@
     "version": "0.0.0",
     "scripts": {
         "build": "ts-node build.ts && tsc --build tsconfig.prod.json",
-        "lint": "eslint . --ext .ts",
         "start": "node -r module-alias/register ./dist --env=production",
+        "deploy": "npm run build && pm2 start pm2.config.json",
+        "undeploy": "pm2 stop all && pm2 delete all",
         "serve": "nodemon",
         "try": "ts-node -r tsconfig-paths/register ./src",
-        "test": "nodemon --config ./spec/nodemon.json"
+        "test": "nodemon --config ./spec/nodemon.json",
+        "lint": "eslint . --ext .ts"
     },
     "nodemonConfig": {
         "watch": [
@@ -20,10 +22,7 @@
         "exec": "ts-node -r tsconfig-paths/register ./src"
     },
     "_moduleAliases": {
-        "@daos": "dist/daos",
-        "@entities": "dist/entities",
-        "@shared": "dist/shared",
-        "@server": "dist/Server"
+        "@": "dist"
     },
     "eslintConfig": {
         "parser": "@typescript-eslint/parser",
