@@ -13,7 +13,7 @@ class TranscodeProcessor {
     /** create new stream from supplied RTSP url */
     public create_stream(rtsp_url: string): Promise<Stream> {
         const found = streams.find(stream => stream.rtsp_url === rtsp_url);
-        if (found) return Promise.resolve(found);
+        if (found && found.is_active) return Promise.resolve(found);
 
         const length = streams.push(
             new Stream(rtsp_url, this.stream_duration, this.working_directory)

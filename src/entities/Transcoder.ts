@@ -31,7 +31,7 @@ class Transcoder {
                 `-i ${this.rtsp_url}`,
                 `-c:v libx264`,
                 `-crf 21`,
-                `-preset ultrafast`,
+                `-preset veryfast`,
                 `-g 25`,
                 `-sc_threshold 0`,
                 `-c:a aac`,

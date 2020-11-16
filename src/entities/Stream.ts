@@ -36,6 +36,7 @@ class Stream extends Transcoder {
     public refresh() {
         if (Date.now() < this.next_refresh) return this;
         this.timeout.refresh();
+        this.next_refresh = Math.floor(Date.now() + this.duration / 2);
         return this;
     }
 
