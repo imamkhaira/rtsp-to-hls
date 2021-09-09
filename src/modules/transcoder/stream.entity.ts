@@ -57,8 +57,8 @@ export class Stream implements Manageable {
             'ffmpeg',
             [
                 `-fflags nobuffer`,
-                `-rtsp_transport tcp`,
-                `-i ${this.sourceUrl}`,
+                // `-rtsp_transport tcp`,
+                `-i "${this.sourceUrl}"`,
                 `-vsync 1`,
                 `-c copy`,
                 `-preset ultrafast`,
@@ -70,16 +70,16 @@ export class Stream implements Manageable {
                 `-hls_list_size 10`,
                 `-hls_flags delete_segments`,
                 `-start_number 1`,
-                `index.m3u8`,
+                `index.m3u8`
             ],
             {
                 cwd: outputDir,
                 shell: true,
-                uid: this.userUid,
-            },
+                uid: this.userUid
+            }
         );
 
-        this.process.stderr?.on('data', (data) => {
+        this.process.stderr?.on('data', data => {
             // console.error(`stderr: ${data}`);
             return;
         });
@@ -100,9 +100,9 @@ export class Stream implements Manageable {
                 this.process.kill();
                 console.log(`failed to stream ${this.sourceUrl}`);
                 return reject(`Cannot transcode ${this.sourceUrl}`);
-            }, this.keepalive);
+            }, this.keepalive - 1000);
 
-            watcher.on('add', async (fileName) => {
+            watcher.on('add', async fileName => {
                 if (!fileName.includes('index.m3u8')) return;
                 await watcher.close();
                 clearTimeout(waitTimer);

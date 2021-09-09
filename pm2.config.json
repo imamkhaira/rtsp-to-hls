@@ -1,9 +1,0 @@
-{
-    "apps": [
-        {
-            "name": "transcoding-server",
-            "script": "npm",
-            "args": "start"
-        }
-    ]
-}

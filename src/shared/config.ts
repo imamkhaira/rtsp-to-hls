@@ -11,9 +11,6 @@ export const OUTPUT_URL = String(process.env.OUTPUT_URL);
 /** port to listen to */
 export const PORT = Number(process.env.PORT);
 
-/** maximum time in ms to wait until stream is created */
-export const WAIT_TIMEOUT = Number(process.env.WAIT_TIMEOUT);
-
 /** maximum time in ms to keep the stream alive. */
 export const STREAM_KEEPALIVE = Number(process.env.STREAM_KEEPALIVE);
 
