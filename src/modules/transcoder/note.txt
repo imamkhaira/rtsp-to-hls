@@ -1,0 +1,223 @@
+spawn(
+    'ffmpeg',
+    [
+        `-fflags nobuffer`,
+        `-rtsp_transport tcp`,
+        `-stimeout ${streamTimeout}`,
+        `-i ${this.sourceUrl}`,
+        `-vsync 0`,
+        `-copyts`,
+        `-vcodec copy`,
+        `-movflags frag_keyframe+empty_moov`,
+        `-an`,
+        `-hls_flags delete_segments+append_list`,
+        `-f segment`,
+        `-segment_list_flags live`,
+        `-segment_time 5`,
+        `-segment_list_size 1`,
+        `-segment_format mpegts`,
+        `-segment_list ${indexFile}`,
+        `-segment_list_type m3u8`,
+        `-segment_list_entry_prefix ${this.outputDir}/`,
+        `${this.outputDir}/%3d.ts`,
+    ],
+    {
+        shell: true,
+    },
+)
+
+
+
+// let streamTimeout: number;
+// let workDir: string;
+
+// export class Streams {
+//     //s
+//     //
+
+//     /**
+//      * initializes configuration for transcoder.
+//      * @param config object containing `streamTimeout` and `workDir`
+//      */
+//     public static setConfig(config: {
+//         streamTimeout: number;
+//         workDir: string;
+//     }) {
+//         const testCreateFileName = join(config.workDir, 'test.json');
+//         writeJSONSync(testCreateFileName, { success: true });
+
+//         if (!existsSync(testCreateFileName))
+//             throw new Error(`path ${workDir} does not exist`);
+
+//         streamTimeout = config.streamTimeout;
+//         workDir = config.workDir;
+//     }
+
+//     //
+//     //
+
+//     public readonly id: string = generate();
+//     private process: ChildProcess | undefined;
+//     private watcher: FSWatcher | undefined;
+
+//     //
+//     //
+
+//     /**
+//      * spawn a new idle Transcoder.
+//      * you can start by calling the start() method.
+//      * @param sourceUrl full URL of the RTSP stream
+//      * @param workDir absolute path to the folder where the stream subfolder will be created.
+//      * @example
+//      * //start transcoding immediateli
+//      * const task = new Transcoder('rtsp://1.2.3.4/ch01', '/home/batman/desktop').start();
+//      */
+//     constructor(public readonly sourceUrl: string) {
+//         if (!sourceUrl.includes('rtsp://'))
+//             throw new Error(`must have rtsp:// in the sourceUrl`);
+
+//         if (streamTimeout === undefined || workDir === undefined)
+//             throw new Error(
+//                 'please set config using TranscoderEntity.setConfig() first.',
+//             );
+//     }
+
+//     //
+//     //
+
+//     /**
+//      * absolute path to the output folder
+//      * each stream has their own unique folder name based on ID.
+//      */
+//     private get outputDir() {
+//         return join(workDir, this.id);
+//     }
+
+//     //
+//     //
+
+//     /**
+//      * get the absolute URL path of the stream
+//      * @param rootUrl path to prepend to
+//      * @returns path to the stream endpoint from the hostname.
+//      * @example
+//      * // assuming that the this server listens to 127.0.0.1
+//      * task = await task.start();
+//      * task.getIndexUrl('/video'); // returns http://127.0.0.1/video/<taskId>/index.m3u8
+//      */
+//     public getIndexUrl(rootUrl: string) {
+//         return join(rootUrl, this.id, 'index.m3u8');
+//     }
+
+//     //
+//     //
+
+//     /**
+//      * start transcoding.
+//      * the Promise will resolve if `index.m3u8` spawned in the folder
+//      * within WAIT_TIME specification.
+//      * @returns promise of this transcoder instance
+//      */
+//     public start(): Promise<Stream> {
+//         return new Promise((resolve, reject) => {
+//             ensureDirSync(this.outputDir);
+//             const indexFile = join(this.outputDir, 'index.m3u8');
+
+//             this.process = spawn(
+//                 'ffmpeg',
+//                 [
+//                     `-fflags nobuffer`,
+//                     `-rtsp_transport tcp`,
+//                     `-stimeout ${streamTimeout}`,
+//                     `-i ${this.sourceUrl}`,
+//                     `-vsync 0`,
+//                     `-copyts`,
+//                     `-vcodec copy`,
+//                     `-movflags frag_keyframe+empty_moov`,
+//                     `-an`,
+//                     `-hls_flags delete_segments+append_list`,
+//                     `-f segment`,
+//                     `-segment_list_flags live`,
+//                     `-segment_time 5`,
+//                     `-segment_list_size 1`,
+//                     `-segment_format mpegts`,
+//                     `-segment_list ${indexFile}`,
+//                     `-segment_list_type m3u8`,
+//                     `-segment_list_entry_prefix ${this.outputDir}/`,
+//                     `${this.outputDir}/%3d.ts`,
+//                 ],
+//                 {
+//                     shell: true,
+//                 },
+//             );
+
+//             const abortTimer = setTimeout(() => {
+//                 this.stop();
+//                 reject(`ffmpeg process timeout ${streamTimeout / 1000} s.`);
+//             }, streamTimeout);
+
+//             this.watcher = watch(this.outputDir).on('add', (path) => {
+//                 if (path.includes('m3u8')) {
+//                     setTimeout(() => resolve(this), 1000);
+//                     clearTimeout(abortTimer);
+//                     (this.watcher as any).close();
+//                 }
+//             });
+//         });
+//     }
+
+//     //
+//     //
+
+//     /**
+//      * stop transcode process and remove handlers.
+//      * this does not destroy this instance though. can still play again.
+//      * @returns Promise of this instance
+//      */
+//     public stop(): Promise<Stream> {
+//         if (this.process) this.process = void this.process.kill();
+//         if (this.watcher) this.watcher = void this.watcher.close();
+//         removeSync(this.outputDir);
+//         return Promise.resolve(this);
+//     }
+// }
+
+class Stream {
+    private process!: childProcess.ChildProcess;
+
+    constructor()
+
+}
+
+
+/* 
+
+spawn(
+    'ffmpeg',
+    [
+        `-fflags nobuffer`,
+        `-rtsp_transport tcp`,
+        `-stimeout ${streamTimeout}`,
+        `-i ${this.sourceUrl}`,
+        `-vsync 0`,
+        `-copyts`,
+        `-vcodec copy`,
+        `-movflags frag_keyframe+empty_moov`,
+        `-an`,
+        `-hls_flags delete_segments+append_list`,
+        `-f segment`,
+        `-segment_list_flags live`,
+        `-segment_time 5`,
+        `-segment_list_size 1`,
+        `-segment_format mpegts`,
+        `-segment_list ${indexFile}`,
+        `-segment_list_type m3u8`,
+        `-segment_list_entry_prefix ${this.outputDir}/`,
+        `${this.outputDir}/%3d.ts`,
+    ],
+    {
+        shell: true,
+    },
+)
+
+*/
