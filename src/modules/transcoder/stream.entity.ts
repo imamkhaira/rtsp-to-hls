@@ -57,7 +57,7 @@ export class Stream implements Manageable {
             'ffmpeg',
             [
                 `-fflags nobuffer`,
-                `-rtsp_transport tcp`,
+                // `-rtsp_transport tcp`,
                 `-i ${this.sourceUrl}`,
                 `-vsync 1`,
                 `-c copy`,
@@ -100,7 +100,7 @@ export class Stream implements Manageable {
                 this.process.kill();
                 console.log(`failed to stream ${this.sourceUrl}`);
                 return reject(`Cannot transcode ${this.sourceUrl}`);
-            }, this.keepalive);
+            }, this.keepalive - 1000);
 
             watcher.on('add', async (fileName) => {
                 if (!fileName.includes('index.m3u8')) return;
