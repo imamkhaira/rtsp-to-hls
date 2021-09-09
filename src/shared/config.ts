@@ -1,9 +1,20 @@
-const config = {
-    api_port: Number(process.env.API_PORT) || 3000,
-    api_address: process.env.API_ADDRESS || 'http://192.168.100.120:3000',
-    api_root_url: process.env.API_ROOT_URL || '/api',
-    hls_root_dir: process.env.HLS_ROOT_DIR || '/dev/shm/transcoder',
-    hls_duration: Number(process.env.HLS_DURATION) || 20000
-};
+import dotenv from 'dotenv';
 
-export default config;
+dotenv.config();
+
+/** asbolute path where to put index.m3u8 and video segment files */
+export const WORK_DIRECTORY = String(process.env.WORK_DIRECTORY);
+
+/** the url path where the streams will be placed. */
+export const OUTPUT_URL = String(process.env.OUTPUT_URL);
+
+/** port to listen to */
+export const PORT = Number(process.env.PORT);
+
+/** maximum time in ms to wait until stream is created */
+export const WAIT_TIMEOUT = Number(process.env.WAIT_TIMEOUT);
+
+/** maximum time in ms to keep the stream alive. */
+export const STREAM_KEEPALIVE = Number(process.env.STREAM_KEEPALIVE);
+
+export const RUNAS_UID = Number(process.env.RUNAS_UID);
