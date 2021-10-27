@@ -57,12 +57,15 @@ export class Stream implements Manageable {
             'ffmpeg',
             [
                 `-fflags nobuffer`,
-                // `-rtsp_transport tcp`,
+                `-rtsp_transport tcp`,
+                // '-analyzeduration 20',
+                // '-probesize 10M',
                 `-i "${this.sourceUrl}"`,
-                `-vsync 1`,
-                `-c copy`,
-                `-preset ultrafast`,
-                `-movflags frag_keyframe+empty_moov`,
+                // `-vsync 1`,
+                `-c:v copy`,
+                `-c:a copy`,
+                // `-preset ultrafast`,
+                // `-movflags frag_keyframe+empty_moov`,
                 `-an`,
                 `-f hls`,
                 `-hls_init_time 1`,
@@ -80,7 +83,7 @@ export class Stream implements Manageable {
         );
 
         this.process.stderr?.on('data', data => {
-            // console.error(`stderr: ${data}`);
+            console.error(`stderr: ${data}`);
             return;
         });
 

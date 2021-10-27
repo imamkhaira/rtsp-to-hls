@@ -16,14 +16,14 @@ export interface TranscoderConfig {
 export function createResponse(stream: string | null): string {
     return JSON.stringify({
         error: stream === null ? true : false,
-        stream: stream,
+        stream: stream
     });
 }
 
 const moduleCors = cors({
     allowedHeaders: '*',
     origin: '*',
-    methods: '*',
+    methods: '*'
 });
 
 //
@@ -36,12 +36,7 @@ const moduleCors = cors({
  * @param outputUrl the URL root where the files will be available.
  * @returns array of [transcoder, refresher]
  */
-export function TranscoderModule({
-    workDir,
-    outputUrl,
-    keepalive,
-    userUid,
-}: TranscoderConfig) {
+export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: TranscoderConfig) {
     const createStream = (sourceUrl: string): Stream =>
         new Stream({ sourceUrl, workDir, keepalive, userUid });
     //
@@ -56,8 +51,7 @@ export function TranscoderModule({
     transcoder.post('', body('url').notEmpty(), async (req, res) => {
         try {
             const rtspUrl = req.body['url'] as string;
-            if (!rtspUrl.includes('rtsp://'))
-                throw new Error(`url is not defined`);
+            if (!rtspUrl.includes('rtsp://')) throw new Error(`url is not defined`);
 
             let task = taskManager.getProcessbyParam('sourceUrl', rtspUrl);
 
@@ -68,25 +62,17 @@ export function TranscoderModule({
 
             return res
                 .status(200)
-                .end(
-                    createResponse(
-                        path.join(outputUrl, task.refresh().getIndex()),
-                    ),
-                );
+                .end(createResponse(path.join(outputUrl, task.refresh().getIndex())));
         } catch (error) {
             return res.status(200).end(createResponse(null));
         }
     });
 
-    refresher.use(
-        '/:id/index.m3u8',
-        param('id').notEmpty(),
-        (req, res, next) => {
-            const streamId = req.params?.id;
-            if (streamId) taskManager.refreshProcess(streamId);
-            return next();
-        },
-    );
+    refresher.use('/:id/index.m3u8', param('id').notEmpty(), (req, res, next) => {
+        const streamId = req.params?.id;
+        if (streamId) taskManager.refreshProcess(streamId);
+        return next();
+    });
 
     return [transcoder, refresher];
 }
