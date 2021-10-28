@@ -29,4 +29,16 @@ request can be made via API calls and it includes automatic shutdown of unused s
 
 ## Issues and bugs
 
-Should you encounter any issues or bugs, please report to me via imamkhaira (at) gmail (dot) com.
+Test Alarm Fire Alarm Lantai 1 - Chilling Area 1.2.3.4 OFFLINE
+Kitchen | Restricted Area IP Camera Lantai 1 - Front Office Recptionist 192.168.100.104 OFFLINE
+Garage | People Counter Unknown Lantai 1 - Chilling Area 192.168.100.102 OFFLINE
+IPC Recognition IP Camera Lantai 1 - Front Office Recptionist 192.168.100.121 OFFLINE
+Garage IP Camera Lantai 1 - Herbalife Area 192.168.200.127 OFFLINE
+Kitchen IP Camera Lantai 1 - Herbalife Area 192.168.100.238 OFFLINE
+Back Lawn IP Camera Lantai 1 - Herbalife Area 192.168.100.239 OFFLINE
+Receptionist IP Camera Lantai 1 - Herbalife Area 192.168.200.123 OFFLINE
+Front Lawn IP Camera Lantai 1 - Herbalife Area 192.168.200.123 OFFLINE
+PTZ Overwatch IP Camera Lantai 1 - Herbalife Area 192.168.10.141 OFFLINE
+Office Receptionist, 192.168.100.126
+Front Lawn CCTV IP Camera, 192.168.100.92
+Ruang Kerja IP Camera, 192.168.100.125

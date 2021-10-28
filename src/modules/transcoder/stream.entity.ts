@@ -83,7 +83,7 @@ export class Stream implements Manageable {
         );
 
         this.process.stderr?.on('data', data => {
-            console.error(`stderr: ${data}`);
+            // console.error(`stderr: ${data}`);
             return;
         });
 
