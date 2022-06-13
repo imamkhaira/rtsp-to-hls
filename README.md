@@ -1,17 +1,13 @@
 # TL;DR
 
 How to deploy transcoder:
-1. Download and install Docker into the server. Make sure that the server
-	 has working internet connection.
+1. Download and install Docker into the server. Make sure that the server has working internet connection.
 2. Open the server's command line interface.
 3. Deploy the transcoder by running the following command:
-	```sh
+```sh
   docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp imamkhaira/rtsp-to-hls:latest
-	```
-4. Configure nginx to proxy /transcode request to the server's listening port (see point D).
-5. 
-
-
+```
+4. Configure nginx to proxy /transcode request to the server's listening port (see point D). 
 
 
 # Complete Description
@@ -21,7 +17,6 @@ How to deploy transcoder:
 
 this aims to make a software to convert a RTSP stream from china CCTV to modern HLS stream.
 request can be made via API calls and it includes automatic shutdown of unused streams.
-
 
 ## B. Running with Docker
 use below steps if you'd like to use Docker.
