@@ -1,4 +1,21 @@
-## RTSP-to-HLS
+# TL;DR
+
+How to deploy transcoder:
+1. Download and install Docker into the server. Make sure that the server
+	 has working internet connection.
+2. Open the server's command line interface.
+3. Deploy the transcoder by running the following command:
+	```sh
+  docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp imamkhaira/rtsp-to-hls:latest
+	```
+4. Configure nginx to proxy /transcode request to the server's listening port (see point D).
+5. 
+
+
+
+
+# Complete Description
+
 
 ## A. Description
 
@@ -102,7 +119,37 @@ in any case, if you prefer to run bare-metal, you can just follow steps below.
 6.  Follow step A.3 above for testing.
 7.  please do note that, you may need to change the source code to use your computer's ramdisk instead of `/tmp`.
 
-## D. Issues and bugs
+
+## D. Proxying and exposing to the Internet.
+You can use nginx to proxy request without directly exposing the
+transcoder to the Internet.
+Additionally, you can add header checking and CORS headers as deemed appropriate.
+
+Sample nginx config:
+```txt
+
+# this endpoint is accessible at https://<public_ip>:8300/transcode
+server {
+    listen 8300 ssl;
+    listen [::]:8300 ssl;
+    #server_name 192.168.100.83;
+    #server_name localhost;
+    server_name tsf.xtend.my.id;
+
+    include snippets/tsf.xtend.my.id-ssl.conf;
+    error_log /var/log/nginx/tsf-transcoder.error.log;
+    access_log /var/log/nginx/tsf-transcoder.access.log;
+ 
+    location / {
+    		# transcoder is mapped to port 3000
+        proxy_pass http://localhost:3000;
+        proxy_pass_request_headers on;
+    }
+}
+```
+
+
+## E. Issues and bugs
 
 Should you encounter any issues or bugs, please report to me via imamkhaira (at) gmail (dot) com.
 
