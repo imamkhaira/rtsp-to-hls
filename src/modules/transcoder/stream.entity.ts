@@ -63,6 +63,7 @@ export class Stream implements Manageable {
                 `-c copy`,
                 `-preset ultrafast`,
                 `-movflags frag_keyframe+empty_moov`,
+
                 `-an`,
                 `-f hls`,
                 `-hls_init_time 1`,
@@ -70,16 +71,16 @@ export class Stream implements Manageable {
                 `-hls_list_size 10`,
                 `-hls_flags delete_segments`,
                 `-start_number 1`,
-                `index.m3u8`,
+                `index.m3u8`
             ],
             {
                 cwd: outputDir,
                 shell: true,
-                uid: this.userUid,
-            },
+                uid: this.userUid
+            }
         );
 
-        this.process.stderr?.on('data', (data) => {
+        this.process.stderr?.on('data', data => {
             // console.error(`stderr: ${data}`);
             return;
         });
@@ -102,7 +103,7 @@ export class Stream implements Manageable {
                 return reject(`Cannot transcode ${this.sourceUrl}`);
             }, this.keepalive - 1000);
 
-            watcher.on('add', async (fileName) => {
+            watcher.on('add', async fileName => {
                 if (!fileName.includes('index.m3u8')) return;
                 await watcher.close();
                 clearTimeout(waitTimer);
