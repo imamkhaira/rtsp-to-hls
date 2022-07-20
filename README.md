@@ -21,12 +21,7 @@ request can be made via API calls and it includes automatic shutdown of unused s
 
 ## B. Running with Docker
 
-<<<<<<< HEAD
-use below steps if you'd like to use Docker.
-=======
-Use below steps if you'd like to use Docker.
-
-> > > > > > > b6bf382 (chore: 👷 update to latest dependencies)
+use below steps if you'd like to use Docker
 
 ### A.1. Using the Docker image
 

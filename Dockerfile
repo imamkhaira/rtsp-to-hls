@@ -1,12 +1,14 @@
-FROM node:14-alpine
+FROM node:16-alpine
+RUN apk update
+RUN apk upgrade
 RUN apk add --no-cache ffmpeg
+RUN npm install --location=global npm
 EXPOSE 80
 WORKDIR /home
-COPY ./src ./src
-COPY ./tsconfig.json .
-COPY ./package-lock.json .
-COPY ./package.json .
-COPY ./LICENSE .
+COPY ./build ./build
 COPY .env.build .env
-RUN npm install
-CMD ["npm", "run", "deploy"]
+COPY ./package.json .
+COPY ./package-lock.json .
+COPY ./LICENSE .
+RUN npm install --production
+ENTRYPOINT ["node", "build/index.js"]
