@@ -12,3 +12,4 @@ COPY ./package-lock.json .
 COPY ./LICENSE .
 RUN npm install --production
 ENTRYPOINT ["node", "build/index.js"]
+    
