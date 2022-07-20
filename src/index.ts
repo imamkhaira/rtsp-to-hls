@@ -16,5 +16,5 @@ App.use(OUTPUT_URL, refresher);
 App.use(OUTPUT_URL, StaticModule(WORK_DIRECTORY));
 
 App.listen(PORT, () => {
-    console.log(`server is listening on port ${PORT}`);
+    console.table({ WORK_DIRECTORY, OUTPUT_URL, PORT, STREAM_KEEPALIVE });
 });
