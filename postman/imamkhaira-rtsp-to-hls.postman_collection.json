@@ -1,0 +1,300 @@
+{
+	"info": {
+		"_postman_id": "73824d77-0196-4cb1-b5d4-06edd90dca1f",
+		"name": "imamkhaira/rtsp-to-hls",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Hello World!",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/transcode",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"transcode"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Sample Hello World response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/transcode",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"transcode"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 19 Jul 2022 04:23:48 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						},
+						{
+							"key": "Content-Length",
+							"value": "867"
+						}
+					],
+					"cookie": [],
+					"body": "        \n<html>\n    <head>\n        <title>Transcoder is Accessible</title>\n        <style>\n            .body, html {\n                color: white;\n                background-color: black;\n                font-family: \"San Francisco\", \"Roboto\", sans-serif;\n            }\n            </style>\n    </head>\n    <body>\n        <h1>Transcoder is Accessible.</h1>\n        <p>\n            If you can see this, transcoder API is working and accessible from outside.\n            Start by sending a POST request to this endpoint (http://localhost/transcode)\n            and include the following body:\n            </p>\n        <pre>{ \"url\": \"your RTSP stream\" }</pre>\n        <p>Alles gute und viel Gluck!</p>\n        <hr />\n        <pre>imamkhaira/rtsp-to-hls v1.2.0</pre>\n    </body>\n</html>"
+				}
+			]
+		},
+		{
+			"name": "Create Transcode Task",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"rtsp://192.168.100.123:554/ch02.264\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/transcode",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"transcode"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Sample success response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"rtsp://192.168.77.2:554/ch60_sub.264\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/transcode",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"transcode"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 19 Jul 2022 04:26:35 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						},
+						{
+							"key": "Content-Length",
+							"value": "28"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": false,\n    \"stream\": \"/output/1iHLWkga85dbMavP7z3ftj/index.m3u8\"\n}"
+				},
+				{
+					"name": "Sample failed response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"rtsp://192.168.77.2:554/ch60_sub.264\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/transcode",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"transcode"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 19 Jul 2022 04:26:35 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						},
+						{
+							"key": "Content-Length",
+							"value": "28"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": true,\n    \"stream\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Get index.m3u8 file",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/output/<stream id>/index.m3u8",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"output",
+						"<stream id>",
+						"index.m3u8"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "sample index file",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/output/mfnkHwct8rpy7T5nxkrrs5/index.m3u8",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"output",
+								"mfnkHwct8rpy7T5nxkrrs5",
+								"index.m3u8"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "raw",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Accept-Ranges",
+							"value": "bytes"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "public, max-age=0"
+						},
+						{
+							"key": "Last-Modified",
+							"value": "Wed, 20 Jul 2022 03:57:12 GMT"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"221-18219c0a889\""
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/vnd.apple.mpegurl"
+						},
+						{
+							"key": "Content-Length",
+							"value": "545"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 20 Jul 2022 03:57:13 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:NO\n#EXT-X-TARGETDURATION:8\n#EXTINF:7.085000,\n000.ts\n#EXTINF:0.801000,\n001.ts\n#EXTINF:0.800000,\n002.ts\n#EXTINF:0.801000,\n003.ts\n#EXTINF:0.800000,\n004.ts\n#EXTINF:0.801000,\n005.ts\n#EXTINF:0.801000,\n006.ts\n#EXTINF:0.800000,\n007.ts\n#EXTINF:0.801000,\n008.ts\n#EXTINF:0.800000,\n009.ts\n#EXTINF:0.801000,\n010.ts\n#EXTINF:0.801000,\n011.ts\n#EXTINF:0.800000,\n012.ts\n#EXTINF:0.801000,\n013.ts\n#EXTINF:0.800000,\n014.ts\n#EXTINF:0.801000,\n015.ts\n#EXTINF:0.801000,\n016.ts\n#EXTINF:0.800000,\n017.ts\n"
+				}
+			]
+		}
+	]
+}
