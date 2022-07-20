@@ -38,8 +38,8 @@ docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp imamkhaira/rtsp-to-hls
 
 Note:
 
--   the transcoder is listening on port 80 in the container.
--   if your server have enough memory, you can improve performance by mounting the host' ramdisk (in ubuntu, it is `/dev/shm`) into the container's `/tmp`. by doing this, the container's temporary files will be put in RAM instead of making large writes in the disk. thus, this will greatly reduce disk I/O and improves overall performance.
+-   The transcoder is listening on port 80 in the container.
+-   If your server have enough memory, you can improve performance by mounting the host' ramdisk (in ubuntu, it is `/dev/shm`) into the container's `/tmp`. by doing this, the container's temporary files will be put in RAM instead of making large writes in the disk. thus, this will greatly reduce disk I/O and improves overall performance.
 -   please read your operating system's documentation regarding the location of ramdisk or how to make one.
 
 ### A.2. Using the transcoder
