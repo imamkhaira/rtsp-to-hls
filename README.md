@@ -43,7 +43,9 @@ If you have a really powerful hardware, or you just hate Docker (like a hardcore
    IMPORTANT! make sure the `RUNAS_UID` is correct, and `WORK_DIRECTORY` is an EMPTY folder!
 4. Install dependencies by running `npm install`
 5. If OK, run for production by running `npm run deploy:start`
-6. Start transcoding by making HTTP `POST` request as described in section C below:
+6. Start transcoding by making HTTP `POST` request as described in section C below
+
+you can stop the transcoder by `npm run deploy:stop`. Or, view the proces by `npm run deploy:status`
 
 Also, please read more on performance in section D below.
 

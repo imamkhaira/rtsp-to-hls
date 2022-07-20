@@ -2,7 +2,7 @@
     "name": "rtsp-to-hls",
     "version": "1.2.0",
     "description": "Convert a RTSP stream from china CCTV to modern HLS stream",
-    "main": "index.js",
+    "main": "index.ts",
     "scripts": {
         "dev": "ts-node-dev ./src/index.ts",
         "build": "tsc",

@@ -1,0 +1,24 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - master
+        tags:
+            - v*-release
+
+jobs:
+    release:
+        name: Create Release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v2
+            - uses: ncipollo/release-action@v1.10.0
+              with:
+                  generateReleaseNotes: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
