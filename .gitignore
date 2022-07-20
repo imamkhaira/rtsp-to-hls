@@ -6,7 +6,6 @@
 # Node artifact files
 node_modules/
 output/
-build/
 .env
 
 # Compiled Java class files
