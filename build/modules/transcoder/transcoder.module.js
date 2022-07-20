@@ -1,57 +1,37 @@
-import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import { body, param } from 'express-validator';
-import { Stream } from './stream.entity';
-import { TaskManager } from './task-manager.entity';
-
-export interface TranscoderConfig {
-    workDir: string;
-    outputUrl: string;
-    keepalive: number;
-    userUid?: number;
-}
-
-/** create a standardized response string */
-export function createResponse(stream: string | null): string {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TranscoderModule = exports.createResponse = void 0;
+const express_1 = __importDefault(require("express"));
+const path_1 = __importDefault(require("path"));
+const cors_1 = __importDefault(require("cors"));
+const express_validator_1 = require("express-validator");
+const stream_entity_1 = require("./stream.entity");
+const task_manager_entity_1 = require("./task-manager.entity");
+function createResponse(stream) {
     return JSON.stringify({
         error: stream === null ? true : false,
         stream: stream
     });
 }
-
-const moduleCors = cors({
+exports.createResponse = createResponse;
+const moduleCors = (0, cors_1.default)({
     allowedHeaders: '*',
     origin: '*',
     methods: '*'
 });
-
-//
-//
-//
-
-/**
- * create an express Router that handles transcoding and refreshing tasks.
- * @param outputDir the directory to temporary store transcoded files
- * @param outputUrl the URL root where the files will be available.
- * @returns array of [transcoder, refresher]
- */
-export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: TranscoderConfig) {
-    const createStream = (sourceUrl: string): Stream =>
-        new Stream({ sourceUrl, workDir, keepalive, userUid });
-    //
-    const taskManager = new TaskManager<Stream>(keepalive);
-    const transcoder = express.Router();
-    const refresher = express.Router();
-
+function TranscoderModule({ workDir, outputUrl, keepalive, userUid }) {
+    const createStream = (sourceUrl) => new stream_entity_1.Stream({ sourceUrl, workDir, keepalive, userUid });
+    const taskManager = new task_manager_entity_1.TaskManager(keepalive);
+    const transcoder = express_1.default.Router();
+    const refresher = express_1.default.Router();
     transcoder.use(moduleCors);
     refresher.use(moduleCors);
-    transcoder.use(express.json());
-
-    // prints greeting in html
+    transcoder.use(express_1.default.json());
     transcoder.get('', (req, res) => {
         const baseUrl = `${req.protocol}://${req.hostname}`;
-
         res.end(`
         <html>
             <head>
@@ -80,36 +60,31 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
         </html>
         `);
     });
-
-    // process inqoming stream request
-    transcoder.post('', body('url').notEmpty(), async (req, res) => {
+    transcoder.post('', (0, express_validator_1.body)('url').notEmpty(), async (req, res) => {
         try {
-            const rtspUrl = req.body['url'] as string;
-            if (!rtspUrl.includes('rtsp://')) throw new Error(`url is not defined`);
-
+            const rtspUrl = req.body['url'];
+            if (!rtspUrl.includes('rtsp://'))
+                throw new Error(`url is not defined`);
             let task = taskManager.getProcessbyParam('sourceUrl', rtspUrl);
-
             if (task === undefined) {
                 const stream = await createStream(rtspUrl).start();
                 task = taskManager.addProcess(stream);
             }
-
             const baseUrl = `${req.protocol}://${req.hostname}`;
             return res
                 .status(200)
-                .end(createResponse(baseUrl + path.join(outputUrl, task.refresh().getIndex())));
-        } catch (error) {
+                .end(createResponse(baseUrl + path_1.default.join(outputUrl, task.refresh().getIndex())));
+        }
+        catch (error) {
             return res.status(200).end(createResponse(null));
         }
     });
-
-    // add a refresher middleware that will refresh a stream
-    // whenever it is being viewed.
-    refresher.use('/:id/index.m3u8', param('id').notEmpty(), (req, res, next) => {
+    refresher.use('/:id/index.m3u8', (0, express_validator_1.param)('id').notEmpty(), (req, res, next) => {
         const streamId = req.params?.id;
-        if (streamId) taskManager.refreshProcess(streamId);
+        if (streamId)
+            taskManager.refreshProcess(streamId);
         return next();
     });
-
     return [transcoder, refresher];
 }
+exports.TranscoderModule = TranscoderModule;
