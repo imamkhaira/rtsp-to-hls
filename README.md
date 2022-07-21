@@ -19,7 +19,6 @@ How to deploy transcoder:
 This aims to make a software to convert a RTSP stream from china CCTV to modern HLS stream.
 request can be made via API calls and it includes automatic shutdown of unused streams.
 
-<<<<<<< HEAD
 
 ## B. Running with Docker
 
@@ -32,8 +31,6 @@ This package offers two way to run, either by using Docker or bare-metal.
 ### B.1. Using the Docker image
 
 Use below steps if you'd like to use Docker.
-
-> > > > > > > fix/docker-entrypoint
 
 for quick testing or deployment, just run this image using Docker with following command:
 
@@ -73,17 +70,18 @@ Also, please read more on performance in section D below.
 
 ## C. Using the Transcoder
 
-### C.1. Create transcod
+### C.1. Create transcoder
 
 Once the transcoder is up and running, you can start transcoding by sending HTTP POST request into `http://<your ip>:<PORT>/transcode` with the following body:
 
+
 ```json
-{
-    "url": "<your cctv's rtsp url>"
-}
+{ "url": "<your cctv's rtsp url>" }
 ```
 
-You MUST make sure that the request' `Content-Type` header is set to `application/json`.
+**Note: You MUST make sure that the request' `Content-Type` header is set to `application/json`.**
+
+
 The transcoder will then process the stream (takes up to 30 s) and replied with following response format:
 
 ```json
@@ -95,14 +93,15 @@ The transcoder will then process the stream (takes up to 30 s) and replied with 
 
 Below is the example if how to send request using cURL
 
-````sh
-   # CAPITALIZED words are variables inside .env
-   curl --location --request POST 'http://<your ip>:<PORT>/transcode' \
-   --header 'Content-Type: application/json' \
-   --data-raw '{ "url": "rtsp://<your cctv url>" }'
+```sh
+ # CAPITALIZED words are variables inside .env
+ curl --location --request POST 'http://<your ip>:<PORT>/transcode' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "url": "rtsp://<your cctv url>" }'
 
-   # Sample response: ' {"error":false,"stream":"http://<your ip>:<PORT>/output/<stream id>/index.m3u8"}'
-   ```
+ # Sample response: 
+ # {"error":false,"stream":"http://<your ip>:<PORT>/output/<stream id>/index.m3u8"}
+```
 
 ### A.3 Testing transcoded stream
 
