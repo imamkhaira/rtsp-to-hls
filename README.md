@@ -19,6 +19,10 @@ How to deploy transcoder:
 This aims to make a software to convert a RTSP stream from china CCTV to modern HLS stream.
 request can be made via API calls and it includes automatic shutdown of unused streams.
 
+## B. Running with Docker
+
+# use below steps if you'd like to use Docker.
+
 ## B. Installation or Deployment
 
 This package offers two way to run, either by using Docker or bare-metal.
@@ -65,17 +69,16 @@ Also, please read more on performance in section D below.
 
 ## C. Using the Transcoder
 
-### C.1. Create transcod
+### C.1. Create transcoder
 
 Once the transcoder is up and running, you can start transcoding by sending HTTP POST request into `http://<your ip>:<PORT>/transcode` with the following body:
 
 ```json
-{
-    "url": "<your cctv's rtsp url>"
-}
+{ "url": "<your cctv's rtsp url>" }
 ```
 
-You MUST make sure that the request' `Content-Type` header is set to `application/json`.
+**Note: You MUST make sure that the request' `Content-Type` header is set to `application/json`.**
+
 The transcoder will then process the stream (takes up to 30 s) and replied with following response format:
 
 ```json
@@ -87,14 +90,15 @@ The transcoder will then process the stream (takes up to 30 s) and replied with 
 
 Below is the example if how to send request using cURL
 
-````sh
-   # CAPITALIZED words are variables inside .env
-   curl --location --request POST 'http://<your ip>:<PORT>/transcode' \
-   --header 'Content-Type: application/json' \
-   --data-raw '{ "url": "rtsp://<your cctv url>" }'
+```sh
+ # CAPITALIZED words are variables inside .env
+ curl --location --request POST 'http://<your ip>:<PORT>/transcode' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "url": "rtsp://<your cctv url>" }'
 
-   # Sample response: ' {"error":false,"stream":"http://<your ip>:<PORT>/output/<stream id>/index.m3u8"}'
-   ```
+ # Sample response:
+ # {"error":false,"stream":"http://<your ip>:<PORT>/output/<stream id>/index.m3u8"}
+```
 
 ### A.3 Testing transcoded stream
 
@@ -114,33 +118,33 @@ below is a sample of Typescript code:
 
 ```ts
 interface TranscoderResponse {
-   error: boolean;
-   stream: string;
+    error: boolean;
+    stream: string;
 }
 
 async function start(): Promise<void> {
-   try {
-       this.isLoading = true;
-       // if error is true, then stream is null.
-       // stream is a string containing absolute path to
-       const { error, stream } = await http.post<TranscoderResponse>(
-           `http://192.168.100.1/transcode`,
-           { url: 'rtsp://192.168.100.2:554/ch01.264' }
-       );
+    try {
+        this.isLoading = true;
+        // if error is true, then stream is null.
+        // stream is a string containing absolute path to
+        const { error, stream } = await http.post<TranscoderResponse>(
+            `http://192.168.100.1/transcode`,
+            { url: 'rtsp://192.168.100.2:554/ch01.264' }
+        );
 
-       if (error === true) throw new Error();
+        if (error === true) throw new Error();
 
-       this.renderer = new Hls();
-       this.renderer.loadSource(this.transcoder + stream);
-       this.renderer.attachMedia(this.video.nativeElement);
-       this.video.nativeElement.play();
-   } catch (error) {
-       this.isError = true;
-   } finally {
-       this.isLoading = false;
-   }
+        this.renderer = new Hls();
+        this.renderer.loadSource(this.transcoder + stream);
+        this.renderer.attachMedia(this.video.nativeElement);
+        this.video.nativeElement.play();
+    } catch (error) {
+        this.isError = true;
+    } finally {
+        this.isLoading = false;
+    }
 }
-````
+```
 
 ## D. Performance Optimization
 
