@@ -9,11 +9,11 @@ export class TaskManager<T extends Manageable> {
 
     /** find a process by processId or sourceUrl */
     public getProcessById(id: string): T | undefined {
-        return this.processes.find((p) => p.id === id);
+        return this.processes.find(p => p.id === id);
     }
 
     public getProcessbyParam(param: keyof T, value: T[keyof T]) {
-        return this.processes.find((p) => p[param] === value);
+        return this.processes.find(p => p[param] === value);
     }
 
     /** add a process to taskManager */
@@ -34,8 +34,7 @@ export class TaskManager<T extends Manageable> {
     private scan(): NodeJS.Timer {
         console.log(`scanning garbage every ${this.scanInterval} ms`);
         return setInterval(() => {
-            console.log(`scanning for garbage`);
-            this.processes = this.processes.filter((p) => {
+            this.processes = this.processes.filter(p => {
                 if (p.isActive()) return true;
                 p.stop();
                 return false;

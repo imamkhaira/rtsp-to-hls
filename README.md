@@ -7,31 +7,27 @@ How to deploy transcoder:
 3. Deploy the transcoder by running the following command:
 
 ```sh
-  docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp imamkhaira/rtsp-to-hls:latest
+  docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp:delegated imamkhaira/rtsp-to-hls:latest
 ```
 
 4. Configure nginx to proxy /transcode request to the server's listening port (see point D).
 
-# Complete Description
+For a more complete configuration, please follow these steps below.
 
-## A. Description
+# Project Goal
 
 This aims to make a software to convert a RTSP stream from china CCTV to modern HLS stream.
 request can be made via API calls and it includes automatic shutdown of unused streams.
 
-## B. Running with Docker
-
-# use below steps if you'd like to use Docker.
-
-## B. Installation or Deployment
+# Installation
 
 This package offers two way to run, either by using Docker or bare-metal.
 
-### B.1. Using the Docker image
+## Using the Docker image
 
 Use below steps if you'd like to use Docker.
 
-for quick testing or deployment, just run this image using Docker with following command:
+For quick testing or deployment, just run this image using Docker with following command:
 
 ```sh
 # no ramdisk mounting (use this if you unsure)
@@ -51,9 +47,9 @@ Note:
 -   please read your operating system's documentation regarding the location of ramdisk or how to make one.
 -   read more on performance in section D below
 
-### B.2. Running from source code
+## Running from source code
 
-If you have a really powerful hardware, or you just hate Docker (like a hardcore BSD dude), you can just follow steps below.
+If you have a really powerful hardware, or you just hate Docker ([like BSD dudes]), you can just follow steps below.
 
 1. Install `ffmpeg` command-line utility. Go to https://ffmpeg.org/download.html and follow instructions.
 2. Copy `.env.example` to `.env`
@@ -67,9 +63,9 @@ you can stop the transcoder by `npm run deploy:stop`. Or, view the proces by `np
 
 Also, please read more on performance in section D below.
 
-## C. Using the Transcoder
+# Using the Transcoder
 
-### C.1. Create transcoder
+## Create Transcoder task
 
 Once the transcoder is up and running, you can start transcoding by sending HTTP POST request into `http://<your ip>:<PORT>/transcode` with the following body:
 
@@ -100,7 +96,7 @@ Below is the example if how to send request using cURL
  # {"error":false,"stream":"http://<your ip>:<PORT>/output/<stream id>/index.m3u8"}
 ```
 
-### A.3 Testing transcoded stream
+## Testing transcoded stream
 
 you can then play the `stream` part of the response in the browser using either:
 
@@ -112,7 +108,7 @@ or if you just wanted to check, simply paste the `stream` into:
 -   [VLC][vlc]
 -   QuickTime Player.
 
-### A.4. Sample code
+## Sample code
 
 below is a sample of Typescript code:
 
@@ -146,25 +142,73 @@ async function start(): Promise<void> {
 }
 ```
 
-## D. Performance Optimization
+# <<<<<<< HEAD
+
+# Proxying to the Internet
+
+When using the Transcoder via reverse proxy, you need to forward two headers from the proxy to the transcoder:
+
+-   `Host`: set this to the listening domain name, and port.
+    The port can be unset if it is either 80 or 443.
+    If not set, it will default to container name or `localhost`.
+-   `X-Forwarded-Proto` set this to the listening protocol (http/https).
+    If not set, it will default to `http`
+
+This is necessary so that the transcoder response has the correct stream url (ex: `https://your_domain.com/output/12345/index.m3u8`).
+otherwise, it will fallback to localhost (ex: `http://localhost/output/12345/index.m3u8`)
+
+Below is a sample of working Nginx configuration:
+
+```nginx
+server {
+    listen 8080 ssl;
+    listen [::]:8080 ssl;
+    server_name transcoder.batmen.cc;
+>>>>>>> cba1fb8 (fix: 🗿 update baseUrl and logging)
+
+    # include snippets/ssl.conf;
+    error_log /var/log/nginx/transcoder.error.log;
+    access_log /var/log/nginx/transcoder.access.log;
+
+    location / {
+        proxy_pass_request_headers on;
+
+        # transcoder is listening on port 3000
+        proxy_pass http://localhost:3000;
+
+        proxy_set_header Host $host:$server_port;
+        # or: proxy_set_header Host transcoder.batmen.cc:8080;
+
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # or: proxy_set_header X-Forwarded-Proto https;
+    }
+
+}
+```
+
+> Help needed! Please help us to add sample config for other web servers!
+
+# Performance Optimization
 
 Please bear in mind that the performance bottleneck of this software is limited by ffmpeg.
 
-### D.1. Optimizing I/O performance.
+### Optimizing I/O performance.
 
-When a transcode process is running, ffmpeg creates a lot of small video files, called 'segments',
-that will be listed in an index.m3u8 file. a HLS video player will then download the segments as the time progresses.
+When a transcode process is running, `ffmpeg` creates a lot of small video files, called `segments`,
+that will be listed in an `index.m3u8` file. a HLS video player will then download the segments as the time progresses.
 Each transcode process can create up to 240 segments that will be cleaned up when no one is watching the steams.
 
 Therefore, it is very good if you can make use of your free RAM as temporary storage to store these segments.
 If you're using Docker, you can mount the ramdisk as a delegated volume mount.
+
 `docker run --name transcoder -d -p 80:80 -v /dev/shm:/tmp:delegated imamkhaira/rtsp-to-hls:latest`
+
 Read more about delegation at https://docker-docs.netlify.app/docker-for-mac/osxfs-caching/#examples
 
 But if you are running from source code/bare-metal, you need to edit the `.env` file,
 and update the value of `WORK_DIRECTORY` to the location of your ramdisk.
 
-### D.2. Optimizing Encode/Decode performance
+### Optimizing Encode/Decode performance
 
 You can try setting up an optimized version of FFMPEG that is compiled specifically for your GPU.
 
@@ -174,11 +218,12 @@ You can try setting up an optimized version of FFMPEG that is compiled specifica
     https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
 -   Other GPU manufacturer, please read https://trac.ffmpeg.org/wiki/HWAccelIntro
 
-### D.3 Network Consideration
+### Network Consideration
 
 The video stream can be very bandwidth-consuming, especially if you transcode multiple streams simultaneously.
 Therefore, it is best to run the transcoder in a server with a gigabit adapter.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 ## D. Proxying and exposing to the Internet.
@@ -217,10 +262,18 @@ server {
 
 ## E. Issues and bugs
 
-Should you encounter any issues or bugs, please open a ticket here.
-if you got special needs and wanted futher discussion, please email me please report to me via 1331247.duck.com
+=======
+
+## Issues and bugs
+
+> > > > > > > cba1fb8 (fix: 🗿 update baseUrl and logging)
+
+Should you encounter any issues or bugs, please [open a ticket here].
+if you got special needs and wanted futher discussion, please email me to 1331247 at duck.com
 
 [hls]: https://github.com/video-dev/hls.js/
 [vjs]: https://videojs.com/
 [vlc]: https://www.videolan.org/
+[open a ticket here]: https://github.com/imamkhaira/rtsp-to-hls/issues
 [(still deserve the 🖕🏻)]: https://www.reddit.com/r/linux/comments/vbvxiv/10_years_ago_today_linus_torvalds_to_nvidia_fu_you/
+[like bsd dudes]: https://www.reddit.com/r/BSD/comments/r32fbi/eli5_why_does_the_freebsd_community_hate_docker/
