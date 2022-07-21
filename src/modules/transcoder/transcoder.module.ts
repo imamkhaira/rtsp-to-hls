@@ -20,6 +20,17 @@ export function createResponse(stream: string | null): string {
     });
 }
 
+/**
+ * extract URL from request, be it proxied or not.
+ * @param req incoming request
+ * @returns URL string
+ */
+function getBaseUrl(req: express.Request): string {
+    const proto = req.header('x-forwarded-proto') || req.protocol;
+    const host = req.header('x-forwarded-host') || req.header('host');
+    return `${proto}://${host}`;
+}
+
 const moduleCors = cors({
     allowedHeaders: '*',
     origin: '*',
@@ -39,6 +50,7 @@ const moduleCors = cors({
 export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: TranscoderConfig) {
     const createStream = (sourceUrl: string): Stream =>
         new Stream({ sourceUrl, workDir, keepalive, userUid });
+
     //
     const taskManager = new TaskManager<Stream>(keepalive);
     const transcoder = express.Router();
@@ -50,8 +62,6 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
 
     // prints greeting in html
     transcoder.get('', (req, res) => {
-        const baseUrl = `${req.protocol}://${req.hostname}`;
-
         res.end(`
         <html>
             <head>
@@ -68,7 +78,7 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
                 <h1>Transcoder is Accessible.</h1>
                 <p>
                     If you can see this, transcoder API is working and accessible from outside.
-                    Start by sending a POST request to this endpoint (${baseUrl}/transcode)
+                    Start by sending a POST request to this endpoint (${getBaseUrl(req)}/transcode)
                     and include the following body:
                     </p>
                 <pre>{ "url": "your RTSP stream" }</pre>
@@ -85,7 +95,7 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
     transcoder.post('', body('url').notEmpty(), async (req, res) => {
         try {
             const rtspUrl = req.body['url'] as string;
-            if (!rtspUrl.includes('rtsp://')) throw new Error(`url is not defined`);
+            if (!rtspUrl.includes('rtsp://')) throw `url is not defined`;
 
             let task = taskManager.getProcessbyParam('sourceUrl', rtspUrl);
 
@@ -94,10 +104,10 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
                 task = taskManager.addProcess(stream);
             }
 
-            const baseUrl = `${req.protocol}://${req.hostname}`;
-            return res
-                .status(200)
-                .end(createResponse(baseUrl + path.join(outputUrl, task.refresh().getIndex())));
+            const response = createResponse(
+                getBaseUrl(<any>req) + path.join(outputUrl, task.refresh().getIndex())
+            );
+            return res.status(200).end(response);
         } catch (error) {
             return res.status(200).end(createResponse(null));
         }
