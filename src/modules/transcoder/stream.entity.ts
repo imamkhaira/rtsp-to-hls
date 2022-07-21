@@ -148,7 +148,6 @@ export class Stream implements Manageable {
      */
     public refresh(): Stream {
         this.killAt = Date.now() + this.keepalive;
-        console.log(`refreshing ${this.sourceUrl}`);
         return this;
     }
 }
