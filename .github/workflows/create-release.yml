@@ -5,32 +5,41 @@ name: CI
 on:
     workflow_dispatch:
     push:
-        tags:
-            - v*-release
+        branches:
+            - master
 
 jobs:
-    build:
-        name: 'Create build'
-        # The type of runner that the job will run on
-        runs-on: ubuntu-latest
-        # Steps represent a sequence of tasks that will be executed as part of the job
-        steps:
-            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@v3
-            # Runs a single command using the runners shell
-            - run: |
-                  npm install
-                  npm run build
-
     release:
-        needs: build
         name: Create Release
         runs-on: ubuntu-latest
         permissions:
             contents: write
         steps:
-            - uses: actions/checkout@v2
-            - uses: ncipollo/release-action@v1.10.0
+            - name: Checkout main
+              id: checkout
+              uses: actions/checkout@v2
+
+            - name: Test tsc Build
+              id: build
+              run: |
+                  npm install
+                  npm run build
+
+            - name: Get build date
+              id: get_date
+              run: echo "::set-output name=date::$(date +'%Y%m%d%H%M%S')"
+
+            - name: Get version from package.json
+              id: get_version
+              uses: notiz-dev/github-action-json-property@release
               with:
+                  path: 'package.json'
+                  prop_path: 'version'
+
+            - name: Create GitHub Release
+              id: make_release
+              uses: ncipollo/release-action@v1.10.0
+              with:
+                  tag: v${{steps.get_version.outputs.prop}}-${{steps.get_date.outputs.date}}
                   generateReleaseNotes: true
                   token: ${{ secrets.GITHUB_TOKEN }}
