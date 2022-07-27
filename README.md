@@ -142,8 +142,6 @@ async function start(): Promise<void> {
 }
 ```
 
-# <<<<<<< HEAD
-
 # Proxying to the Internet
 
 When using the Transcoder via reverse proxy, you need to forward two headers from the proxy to the transcoder:
@@ -164,7 +162,6 @@ server {
     listen 8080 ssl;
     listen [::]:8080 ssl;
     server_name transcoder.batmen.cc;
->>>>>>> cba1fb8 (fix: 🗿 update baseUrl and logging)
 
     # include snippets/ssl.conf;
     error_log /var/log/nginx/transcoder.error.log;
@@ -222,9 +219,6 @@ You can try setting up an optimized version of FFMPEG that is compiled specifica
 
 The video stream can be very bandwidth-consuming, especially if you transcode multiple streams simultaneously.
 Therefore, it is best to run the transcoder in a server with a gigabit adapter.
-
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 ## D. Proxying and exposing to the Internet.
 
