@@ -15,10 +15,13 @@ export const PORT = 8081;
  * such as the ramdisk or `/dev/shm`.
  * make sure this directory is writable!!
  */
-export const TEMP_DIR = '/dev';
+export const TEMP_DIR = '/dev/shm';
 
 /**
  * uuid of the user that this app will run as.
  * this user should have permission to write to `TEMP_DIR` above.
  */
 export const RUNAS_UID = 1000;
+
+/** how long to keep the stream alive, by default (2 min). unless overridden */
+export const DEFAULT_KEEPALIVE = 120 * 60 * 1000;

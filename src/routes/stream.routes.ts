@@ -1,9 +1,10 @@
 /**
  * app.routes.ts
  * created by: the batmen <imamkhaira@gmail.com>
- * last updated on 2023-02-03
+ * last updated on 2023-02-06
+ *
  * --------------------------------------------------------------- *
- * in memory of Gisel, my cat who had suddenly died.
+ * in memory of Gisell, my cat who had suddenly died.
  * rest in peace, kitty. i know, i was not a good master.
  * I shall bear this loss of this death until the end of my life.
  * --------------------------------------------------------------- *
@@ -16,13 +17,31 @@
  */
 
 import express from 'express';
-const stream_route = express.Router({ caseSensitive: true });
+// import { TEMP_DIR } from '../config/config';
+import { createLogger } from '../utils/logger';
+import { serveHtmlBanner } from '../controllers/stream.controller';
 
-stream_route.get('/transcode', (req, res) => {
-    res.end(`GET ssdd`);
+/* -------------------------------------------------------------------------- */
+/*                        `stream` route initialization                       */
+/* -------------------------------------------------------------------------- */
+
+const log = createLogger('stream.route');
+const stream_route = express.Router({ caseSensitive: true, strict: true });
+
+/* -------------------------------------------------------------------------- */
+/*                         `stream` route definitions                         */
+/* -------------------------------------------------------------------------- */
+
+// stream_route.use(express.static(TEMP_DIR));
+
+stream_route.get('/:id/index.m3u8', (req, res) => {
+    log.warn('bisa nih wak:}');
+    // res.end(`pepec`);
 });
 
-stream_route.post('/transcode', (req, res) => {
+stream_route.get('/', serveHtmlBanner);
+
+stream_route.post('', (req, res) => {
     res.end(`POST aaaaa`);
 });
 
