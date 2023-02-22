@@ -1,16 +1,27 @@
-import express from 'express';
-import { stream_route } from './routes/stream.routes';
-import { createLogger } from './utils/logger';
+/**
+ * server.ts
+ * create the main express instance, and s
+ * created by: the batmen <imamkhaira@gmail.com>
+ * last updated on Tue 21 Feb 2023
+ */
 
-const app = express();
-const log = createLogger('server');
+import express from 'express'
+import { createSubLogger } from './utils/logger'
+import { baseRouter } from './routes/app.routes.ts'
+import { customErrorHandler } from './middlewares/custom-error-handler'
 
-log.info('loading routes');
-app.use('/stream', stream_route);
+const app = express()
+const log = createSubLogger('server')
 
-function startServer(port: number) {
-    log.info('starting server');
-    app.listen(port, () => void log.info(`Server listening on port ${port}`));
+log.info('loading routes')
+app.use('/transcode', baseRouter)
+// app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   res.end('hehehe')
+// })
+app.use(customErrorHandler)
+
+function startServer (port: number): void {
+  app.listen(port, () => log.info(`Server lisstening on port ${port}`))
 }
 
-export { startServer };
+export { startServer }

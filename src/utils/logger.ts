@@ -1,27 +1,52 @@
 /**
  * logger.ts
- * created by: the batmen <imamkhaira@gmail.com>
- * last updated on 2023-02-06
- *
  * configures Winston logger library to log using timestamped JSON
  * co console and file.
+ *
+ * created by: the batmen <imamkhaira@gmail.com>
+ * last updated on Mon 21 Feb 2023
+ *
  */
 
-import { createLogger as createWinstonLogger, config, format, transports } from 'winston';
+import {
+  createLogger,
+  config,
+  format,
+  transports,
+  type Logger
+} from 'winston'
+
+/* -------------------------------------------------------------------------- */
 
 /** write log to the console */
-const console_driver = new transports.Console();
+const consoleOutput = new (transports.Console)()
+
+/** write log to a log file, rotated regularly */
+// const fileOutput = new (transports.DailyRotateFile)({
+//   filename: cfg.appLogName,
+//   dirname: __dirname + '/../' + cfg.logsDirectory,
+//   datePattern: cfg.rollingDatePattern,
+//   timestamp: timeFormatFn
+// })
+
+/** create a custom log format in JSON */
+const customJSONLog = format.combine(
+  format.errors({ stack: true }),
+  format.timestamp(),
+  format.json(),
+  format.prettyPrint()
+)
 
 /** write log to the default log driver. */
-const winston = createWinstonLogger({
-    levels: config.npm.levels,
-    format: format.combine(format.timestamp(), format.json()),
-    transports: [console_driver]
-});
+const appLogger = createLogger({
+  levels: config.npm.levels,
+  format: customJSONLog,
+  transports: [consoleOutput]
+})
 
 /** creates a logger with the given `scope`. */
-function createLogger(scope: string) {
-    return winston.child({ scope });
+function createSubLogger (scope: string): Logger {
+  return appLogger.child({ scope })
 }
 
-export { createLogger };
+export { appLogger, createSubLogger }
