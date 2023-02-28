@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RTSP-to-HLS test</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body,
+    html {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .d1 {
+      border: 1px solid red;
+    }
+
+    .d2 {
+      border: 1px solid green;
+    }
+
+    .d3 {
+      border: 1px solid blue;
+    }
+
+    .d4 {
+      border: 1px solid orange;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="flex flex-col items-center justify-center">
+    <h1 class="text-xl">imamkhaira/RTSP-to-HLS Test Site</h1>
+    <h2> instruction: press play. gblk.</h2>
+  </div>
+
+  <div class="flex justify-center d4 h-full">
+    <video id="video" class="d2" controls></video>
+  </div>
+
+</body>
+<script>
+  var video = document.getElementById('video');
+  // enter the stream url here
+  var videoSrc = 'http://localhost/index.m3u8';
+  if (Hls.isSupported()) {
+    var hls = new Hls({
+      enableWorker: true,
+      maxBufferLength: 1,
+      backBufferLength: 1,
+      progressive: true,
+      testBandwidth: false,
+      liveSyncDurationCount: 1,
+      nudgeOffset: 0,
+      appendErrorMaxRetry: 10
+    });
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+  }
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+  }
+
+
+</script>
+
+</html>

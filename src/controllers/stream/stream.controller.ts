@@ -30,11 +30,10 @@ export function streamTest (req: Request, res: Response): void {
  * listens at `/stream/:streamId/index.m3u8`
  */
 export function streamIndex (req: Request, res: Response): void {
-  // const streamId = req.params.id as string | undefined
-  // if (streamId === undefined) throw new Error('stream id not provided')
-  // const filePath = join(TEMP_DIR, streamId, 'index.m3u8')
-  // res.download(filePath)
-  res.end('pepek zurahmi')
+  const streamId = req.params.id as string | undefined
+  if (streamId === undefined) throw new Error('stream id not provided')
+  const filePath = join(TEMP_DIR, streamId, 'index.m3u8')
+  res.download(filePath)
 }
 
 /* -------------------------------------------------------------------------- */
