@@ -1,0 +1,6 @@
+== RTSP to HLS transcoder ===
+
+hmmm
+I will add help later ya
+
+

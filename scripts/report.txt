@@ -1,0 +1,24 @@
+QMS installed at IWK Counters
+
+Several issues need to resolve:
+1. Report not tallied and  inaccurate.
+ - Status: in progress
+ - Note: finding alternative way to record queue data every hour, and periodically send to server.
+   this proves to be very difficult due to the limitation of SQL Server 2008, used in QMS machine.
+   
+2. QMS machine dispensing automatically without being pressed.
+  - Status: pending test
+  - Note: Testing a new script that will disable and re-enable touchscreen driver instead of restarting the whole qms machine
+
+3. Report is still being done manually and can't be extracted from CMS.
+  - Status: pending issue no 1
+  - Note: There my be changes required to the reporting API due to changes in the tally system.
+    we'll work on this when issue no 1 has been fixed
+
+4. QMS machine broken and require long time to repair. In the meantime data not available at UO
+  - Status: installing at Klang site
+  - Note: will install this replacement hardware
+
+5. Developing new QMS Software
+  - Status: fixing issue
+  - Note: cannot use printer and callpad yet (because no driver is available, need more research)

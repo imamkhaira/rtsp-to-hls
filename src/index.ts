@@ -1,19 +1,17 @@
-import express from 'express';
-import { WORK_DIRECTORY, OUTPUT_URL, PORT, STREAM_KEEPALIVE } from './shared/config';
-import { StaticModule } from './modules/static/static.module';
-import { TranscoderModule } from './modules/transcoder/transcoder.module';
-const App = express();
+/**
+ * index.ts
+ * entry point of the transcoder app
+ *
+ * created by: the batmen <imamkhaira@gmail.com>
+ * last updated on Mon 20 Feb 2023
+ *
+ * * --------------------------------------------------------------- *
+ * in memory of Gisel, my cat who had suddenly died.
+ * rest in peace, kitty.
+ * ----------------------------------------------------------------- *
+ */
 
-const [transcoder, refresher] = TranscoderModule({
-    workDir: WORK_DIRECTORY,
-    outputUrl: OUTPUT_URL,
-    keepalive: STREAM_KEEPALIVE
-});
+import { startServer } from './server'
 
-App.use('/transcode', transcoder);
-App.use(OUTPUT_URL, refresher);
-App.use(OUTPUT_URL, StaticModule(WORK_DIRECTORY));
-
-App.listen(PORT, () => {
-    console.table({ WORK_DIRECTORY, OUTPUT_URL, PORT, STREAM_KEEPALIVE });
-});
+// start he server
+startServer(8081)
