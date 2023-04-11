@@ -1,9 +1,6 @@
 #!/bin/bash
 
-echo "stopping transcoder"
+# stop transcoder
 sudo docker kill transcoder
-
-echo "starting transcoder again"
 sudo docker start transcoder
 
-echo "complete"
