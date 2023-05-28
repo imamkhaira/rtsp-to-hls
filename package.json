@@ -1,6 +1,6 @@
 {
     "name": "rtsp-to-hls",
-    "version": "1.2.3",
+    "version": "1.15.3",
     "description": "Convert a RTSP stream from china CCTV to modern HLS stream",
     "main": "index.ts",
     "scripts": {
@@ -10,6 +10,7 @@
         "deploy:stop": "pm2 stop rtsp-to-hls && pm2 delete rtsp-to-hls",
         "deploy:status": "pm2 status",
         "container:build": "tsc && docker build -t imamkhaira/rtsp-to-hls:latest .",
+        "container:buildx": "tsc && docker buildx build --platform=linux/amd64 -t imamkhaira/rtsp-to-hls:latest .",
         "container:publish": "docker push imamkhaira/rtsp-to-hls:latest"
     },
     "repository": {

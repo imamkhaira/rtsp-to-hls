@@ -109,6 +109,7 @@ export function TranscoderModule({ workDir, outputUrl, keepalive, userUid }: Tra
             );
             return res.status(200).end(response);
         } catch (error) {
+            console.error(error)
             return res.status(200).end(createResponse(null));
         }
     });

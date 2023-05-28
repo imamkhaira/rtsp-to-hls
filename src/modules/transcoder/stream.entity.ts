@@ -75,24 +75,31 @@ export class Stream implements Manageable {
             'ffmpeg',
             [
                 `-fflags nobuffer`,
-                `-flags low_delay`,
+                `-nostats`,
+                `-hide_banner`,
+                `-loglevel error`,
                 `-rtsp_transport tcp`,
+                `-analyzeduration 10000000`,
+                `-probesize 10000000`,
+                `-use_wallclock_as_timestamps 1`,
+                `-fpsprobesize 50`,
                 `-i "${this.sourceUrl}"`,
-                `-vsync cfr`,
-                `-copyts`,
-                `-vcodec copy`,
+                `-fps_mode cfr`,
+                `-r 30`,
+                `-c:v copy`,
+                `-c:a copy`,
                 `-movflags frag_keyframe+empty_moov`,
-                `-an`,
                 `-hls_flags delete_segments+append_list`,
                 `-f segment`,
-                `-segment_wrap 240`,
                 `-segment_list_flags live`,
+                `-segment_wrap 5`,
                 `-segment_time 0.5`,
+                `-segment_list_size 5`,
                 `-segment_format mpegts`,
-                `-segment_list_type m3u8`,
                 `-segment_list index.m3u8`,
-                `%3d.ts`
-            ],
+                `-segment_list_type m3u8`,
+                `"%d.ts"`,
+                ] ,
             {
                 cwd: outputDir,
                 shell: true,
@@ -101,9 +108,15 @@ export class Stream implements Manageable {
         );
 
         this.process.stderr?.on('data', data => {
-            // console.error(`stderr: ${data}`);
-            return;
+            console.error(`stderr: ${data}`);
+            return void data;
         });
+
+        this.process.stdout?.on('data', data => {
+            // console.error(`stdout: ${data}`);
+            return void data;
+        });
+
 
         this.process.once('close', () => {
             this.killAt = Date.now();
